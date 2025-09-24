@@ -1,31 +1,10 @@
 // about.js - About page specific functionality
-document.addEventListener('DOMContentLoaded', async () => {
-    // Try to load page-specific content, with fallbacks
-    let aboutContent = {
-        subtitle: "Creating whimsical worlds, one waffle at a time 🧇",
-        introduction: "Hello! I'm WafflesForArt, an undergraduate art student passionate about bringing imagination to life through various artistic mediums. Currently pursuing my degree while supporting my education through my artwork.",
-        philosophy: "I believe art should spark joy and wonder. My work blends whimsy with technical skill to create pieces that transport viewers to imaginative worlds. Whether it's a detailed illustration or a dynamic animation, I strive to infuse each piece with personality and emotion that resonates with audiences of all ages.",
-        process: "Every project begins with understanding the vision. I collaborate closely with clients, providing regular updates and incorporating feedback throughout the creative process. From initial sketches to final polish, transparency and communication are key to bringing your ideas to life."
-    };
-
-    try {
-        const response = await fetch('data/page-configs.json');
-        const pageConfigs = await response.json();
-        const aboutConfig = pageConfigs.about;
-
-        // Update content with loaded data if available
-        if (aboutConfig && aboutConfig.content) {
-            aboutContent = aboutConfig.content;
-        }
-    } catch (error) {
-        console.warn('Using fallback about content:', error);
-    }
-
-    // Update content elements
-    document.getElementById('heroSubtitle').textContent = aboutContent.subtitle;
-    document.getElementById('artistIntro').textContent = aboutContent.introduction;
-    document.getElementById('philosophyText').textContent = aboutContent.philosophy;
-    document.getElementById('processText').textContent = aboutContent.process;
+document.addEventListener('DOMContentLoaded', () => {
+    // Update content elements from SITE_CONFIG (single source of truth)
+    document.getElementById('heroSubtitle').textContent = SITE_CONFIG.artist.subtitle;
+    document.getElementById('artistIntro').textContent = SITE_CONFIG.artist.bio;
+    document.getElementById('philosophyText').textContent = SITE_CONFIG.artist.philosophy;
+    document.getElementById('processText').textContent = SITE_CONFIG.artist.process;
     
     // Set artist image
     const artistImg = document.getElementById('artistImage');

@@ -147,7 +147,21 @@
                             <input type="text" id="subject" name="subject" class="form-input" required>
                             <span class="form-error">Please enter a subject</span>
                         </div>
-                        
+
+                        <div class="form-group">
+                            <label for="projectType" class="form-label">
+                                Project Type
+                            </label>
+                            <select id="projectType" name="projectType" class="form-input">
+                                <option value="">Select a project type...</option>
+                                <option value="illustration">Illustration</option>
+                                <option value="storyboarding">Storyboarding</option>
+                                <option value="concept">Concept Art</option>
+                                <option value="animation">Animation</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
                         <div class="form-group">
                             <label for="message" class="form-label">
                                 Message <span class="required">*</span>
@@ -182,7 +196,11 @@
         </div>
     </footer>
 
-    
+    <!-- Floating Clouds -->
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+
     <!-- Scripts -->
     <script src="js/config.js"></script>
     <script src="js/main.js"></script>
