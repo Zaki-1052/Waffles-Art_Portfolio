@@ -600,6 +600,95 @@ const PortfolioUtils = (function() {
     };
 
     // ============================================================================
+    // LIGHTBOX MODULE
+    // ============================================================================
+
+    const Lightbox = {
+        /**
+         * Open lightbox with item data
+         */
+        open(item, imagePath) {
+            const lightbox = document.getElementById('lightbox');
+            const image = document.getElementById('lightboxImage');
+            const title = document.getElementById('lightboxTitle');
+            const description = document.getElementById('lightboxDescription');
+            const shopLink = document.getElementById('lightboxShop');
+
+            if (!lightbox || !image || !title || !description) return;
+
+            // Set image
+            image.src = imagePath + item.filename;
+            image.alt = item.title;
+
+            // Fallback to placeholder
+            image.onerror = () => {
+                image.src = `https://picsum.photos/800/600?random=${item.id + 200}`;
+            };
+
+            // Set content
+            title.textContent = item.title;
+            description.textContent = item.description;
+
+            // Handle shop link
+            if (item.hasShop && shopLink) {
+                shopLink.style.display = 'inline-block';
+                shopLink.href = SITE_CONFIG.shop.baseUrl + item.shopLink;
+            } else if (shopLink) {
+                shopLink.style.display = 'none';
+            }
+
+            // Show lightbox
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        },
+
+        /**
+         * Close lightbox
+         */
+        close() {
+            const lightbox = document.getElementById('lightbox');
+            if (lightbox) {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        },
+
+        /**
+         * Initialize lightbox event listeners
+         */
+        init() {
+            const lightbox = document.getElementById('lightbox');
+            const closeBtn = document.getElementById('lightboxClose');
+            const closeX = document.getElementById('lightboxCloseX');
+
+            if (!lightbox) return;
+
+            // Close button event listeners
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => this.close());
+            }
+
+            if (closeX) {
+                closeX.addEventListener('click', () => this.close());
+            }
+
+            // Background click to close
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    this.close();
+                }
+            });
+
+            // ESC key to close
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    this.close();
+                }
+            });
+        }
+    };
+
+    // ============================================================================
     // PUBLIC API
     // ============================================================================
     
@@ -609,6 +698,7 @@ const PortfolioUtils = (function() {
         Animations,
         Hero,
         Utils,
+        Lightbox,
         
         /**
          * Initialize all modules

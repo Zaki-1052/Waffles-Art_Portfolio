@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WafflesForArt Illustrations - Digital and traditional artwork available for purchase">
+    <meta property="og:title" content="WafflesForArt - Illustration Portfolio">
+    <meta property="og:description" content="Explore whimsical illustrations and digital artwork">
+    <meta property="og:type" content="website">
+    <title>Illustrations - WafflesForArt Portfolio</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="logo" aria-label="WafflesForArt Home">
+                <img src="" id="logoImage" alt="WafflesForArt Logo" class="logo-image">
+                WafflesForArt
+            </a>
+
+            <ul class="nav-menu" id="navMenu">
+                <!-- Navigation will be populated by JavaScript -->
+            </ul>
+
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle mobile menu">
+                <span>☰</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Page Hero Section -->
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <a href="index.html">Home</a>
+                <span>/</span>
+                <span>Illustration</span>
+            </nav>
+            <h1 class="page-title">Illustration Portfolio</h1>
+            <p class="page-description">Whimsical digital and traditional artwork bringing imagination to life. Many pieces available as prints in the shop!</p>
+        </div>
+        <div class="floating-brush"></div>
+        <div class="floating-brush"></div>
+    </section>
+
+    <!-- Stats Bar -->
+    <section class="stats-bar">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-number" id="totalCount">24</div>
+                <div class="stat-label">Illustrations</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="shopCount">12</div>
+                <div class="stat-label">In Shop</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="commissionStatus">Open</div>
+                <div class="stat-label">Commissions</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sorting Controls -->
+    <section class="controls-section">
+        <div class="controls-wrapper">
+            <div class="sort-controls">
+                <span class="sort-label">Sort by:</span>
+                <div class="sort-buttons">
+                    <button class="sort-btn active" data-sort="date">Latest</button>
+                    <button class="sort-btn" data-sort="popular">Popular</button>
+                    <button class="sort-btn" data-sort="name">Name</button>
+                </div>
+            </div>
+            <div class="style-filters">
+                <button class="style-tag active" data-style="all">All Styles</button>
+                <button class="style-tag" data-style="digital">Digital</button>
+                <button class="style-tag" data-style="watercolor">Watercolor</button>
+                <button class="style-tag" data-style="character">Character</button>
+                <button class="style-tag" data-style="landscape">Landscape</button>
+                <button class="style-tag" data-style="fantasy">Fantasy</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Illustration Gallery -->
+    <section class="illustration-gallery" id="illustrationGallery">
+        <!-- Gallery items will be dynamically generated -->
+    </section>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <img src="" alt="" class="lightbox-image" id="lightboxImage">
+            <div class="lightbox-info">
+                <h2 class="lightbox-title" id="lightboxTitle"></h2>
+                <p class="lightbox-description" id="lightboxDescription"></p>
+                <div class="lightbox-actions">
+                    <a href="#" class="action-btn primary" id="lightboxShop" target="_blank">View in Shop</a>
+                    <button class="action-btn" id="lightboxClose">Close</button>
+                </div>
+            </div>
+            <button class="lightbox-close" id="lightboxCloseX">×</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="social-links">
+                <!-- Social links will be populated by JavaScript -->
+            </div>
+            <p class="footer-text" id="footerText"></p>
+        </div>
+    </footer>
+
+    <!-- Floating Clouds -->
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/illustrations.js"></script>
+</body>
+</html>
