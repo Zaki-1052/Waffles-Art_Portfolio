@@ -16,6 +16,7 @@ const PortfolioUtils = (function() {
          * Initialize navigation with mobile menu toggle
          */
         init() {
+            this.buildFromConfig(SITE_CONFIG);
             this.setupMobileMenu();
             this.setupDropdowns();
             this.markActivePage();
@@ -163,8 +164,7 @@ const PortfolioUtils = (function() {
          * Initialize gallery with filtering and lazy loading
          */
         init() {
-            this.setupFilters();
-            this.setupLazyLoading();
+            // Don't set up filters here - they'll be set up after population
         },
 
         /**
@@ -209,8 +209,12 @@ const PortfolioUtils = (function() {
             
             // Fallback to placeholder
             img.onerror = () => {
-                const size = options.placeholderSize || { width: 400, height: 500 };
-                img.src = `https://picsum.photos/${size.width}/${size.height}?random=${index + 20}`;
+                // Generate varied dimensions for placeholders
+                const widths = [400, 400, 400];
+                const heights = [300, 500, 400, 600, 350];
+                const width = widths[Math.floor(Math.random() * widths.length)];
+                const height = heights[Math.floor(Math.random() * heights.length)];
+                img.src = `https://picsum.photos/${width}/${height}?random=${index + 20}`;
             };
             
             div.appendChild(img);
@@ -342,6 +346,9 @@ const PortfolioUtils = (function() {
          * Create floating cloud elements
          */
         setupClouds() {
+            // Don't create clouds if they already exist
+            if (document.querySelector('.cloud')) return;
+            
             const cloudCount = 3;
             const cloudContainer = document.body;
             
@@ -442,84 +449,15 @@ const PortfolioUtils = (function() {
             
             // Fallback to placeholder
             heroImg.onerror = () => {
-                heroImg.src = `https://picsum.photos/${isMobile ? '1080/1920' : '1920/1080'}?random=${randomIndex + 1}`;
-            };
-        }
-    };
-
-    // ============================================================================
-    // LIGHTBOX MODULE
-    // ============================================================================
-    
-    const Lightbox = {
-        /**
-         * Open lightbox with content
-         */
-        open(item) {
-            const lightbox = document.getElementById('lightbox');
-            if (!lightbox) return;
-            
-            const image = document.getElementById('lightboxImage');
-            const title = document.getElementById('lightboxTitle');
-            const description = document.getElementById('lightboxDescription');
-            const shopLink = document.getElementById('lightboxShop');
-            
-            if (image) {
-                image.src = item.image;
-                image.alt = item.title || 'Artwork';
-            }
-            
-            if (title) {
-                title.textContent = item.title || 'Untitled';
-            }
-            
-            if (description) {
-                description.textContent = item.description || '';
-            }
-            
-            if (shopLink) {
-                if (item.hasShop && item.shopLink) {
-                    shopLink.style.display = 'inline-block';
-                    shopLink.href = item.shopLink;
+                const fallbackIndex = randomIndex + 1;
+                if (isMobile) {
+                    // Use portrait placeholder for mobile
+                    heroImg.src = `https://picsum.photos/1080/1920?random=${fallbackIndex}`;
                 } else {
-                    shopLink.style.display = 'none';
+                    // Use landscape placeholder for desktop
+                    heroImg.src = `https://picsum.photos/1920/1080?random=${fallbackIndex}`;
                 }
-            }
-            
-            lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // Close on background click
-            lightbox.addEventListener('click', (e) => {
-                if (e.target === lightbox) {
-                    this.close();
-                }
-            });
-            
-            // Close on ESC key
-            document.addEventListener('keydown', this.handleEscKey);
-        },
-
-        /**
-         * Close lightbox
-         */
-        close() {
-            const lightbox = document.getElementById('lightbox');
-            if (!lightbox) return;
-            
-            lightbox.classList.remove('active');
-            document.body.style.overflow = '';
-            
-            document.removeEventListener('keydown', this.handleEscKey);
-        },
-
-        /**
-         * Handle ESC key for closing
-         */
-        handleEscKey(e) {
-            if (e.key === 'Escape') {
-                Lightbox.close();
-            }
+            };
         }
     };
 
@@ -601,7 +539,39 @@ const PortfolioUtils = (function() {
             
             container.innerHTML = '';
             
-            const allSocial = [...config.socialMedia.primary, ...config.socialMedia.secondary];
+            // Use all social media links
+            const allSocial = [
+                {
+                    name: 'TikTok',
+                    icon: '🎵',
+                    url: 'https://www.tiktok.com/@waffles_forart',
+                    ariaLabel: 'TikTok'
+                },
+                {
+                    name: 'Instagram',
+                    icon: '📷',
+                    url: 'https://www.instagram.com/waffles_forart',
+                    ariaLabel: 'Instagram'
+                },
+                {
+                    name: 'YouTube',
+                    icon: '▶️',
+                    url: 'https://www.youtube.com/@waffles_forart',
+                    ariaLabel: 'YouTube'
+                },
+                {
+                    name: 'ArtFight',
+                    icon: '🎨',
+                    url: 'https://artfight.net/~waffles_forart',
+                    ariaLabel: 'ArtFight'
+                },
+                {
+                    name: 'Cara',
+                    icon: '✨',
+                    url: 'https://cara.app/waffles0forart',
+                    ariaLabel: 'Cara'
+                }
+            ];
             
             allSocial.forEach(social => {
                 const link = document.createElement('a');
@@ -638,7 +608,6 @@ const PortfolioUtils = (function() {
         Gallery,
         Animations,
         Hero,
-        Lightbox,
         Utils,
         
         /**

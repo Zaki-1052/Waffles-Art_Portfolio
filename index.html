@@ -81,54 +81,67 @@
     </footer>
     
     <!-- Scripts -->
-    <script src="js/config.js"></script>
-    <script src="js/main.js"></script>
-    <script>
-        // Page-specific initialization
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Load page-specific config
-            try {
-                const response = await fetch('data/page-configs.json');
-                const pageConfigs = await response.json();
-                const homeConfig = pageConfigs.homepage;
-                
-                // Populate filters
-                const filterContainer = document.getElementById('filterContainer');
-                SITE_CONFIG.categories.forEach(cat => {
-                    const btn = document.createElement('button');
-                    btn.className = cat.default ? 'filter-btn active' : 'filter-btn';
-                    btn.dataset.filter = cat.id;
-                    btn.textContent = cat.label;
-                    filterContainer.appendChild(btn);
-                });
-                
-                // Generate gallery items
-                const items = PortfolioUtils.Utils.generateArtworkItems(
-                    SITE_CONFIG.pages.home.galleryItemCount,
-                    homeConfig.artworkMetadata,
-                    SITE_CONFIG.paths.artwork,
-                    SITE_CONFIG.defaultMetadata.artwork.category
-                );
-                
-                PortfolioUtils.Gallery.populate('galleryGrid', items, {
-                    lazyLoad: true,
-                    showOverlay: true
-                });
-                
-                // Initialize filter functionality
-                PortfolioUtils.Gallery.setupFilters();
-            } catch (error) {
-                console.error('Error loading page config:', error);
-                // Fallback to default config
-                const items = PortfolioUtils.Utils.generateArtworkItems(
-                    SITE_CONFIG.pages.home.galleryItemCount,
-                    {},
-                    SITE_CONFIG.paths.artwork,
-                    'illustration'
-                );
-                PortfolioUtils.Gallery.populate('galleryGrid', items);
-            }
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+<script>
+    // Page-specific initialization
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Populate filters first (synchronously)
+        const filterContainer = document.getElementById('filterContainer');
+        SITE_CONFIG.categories.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = cat.default ? 'filter-btn active' : 'filter-btn';
+            btn.dataset.filter = cat.id;
+            btn.textContent = cat.label;
+            filterContainer.appendChild(btn);
         });
-    </script>
+        
+        // Try to load page-specific config
+        let homeConfig = {};
+        try {
+            const response = await fetch('data/page-configs.json');
+            const pageConfigs = await response.json();
+            homeConfig = pageConfigs.homepage;
+        } catch (error) {
+            console.warn('Using fallback config');
+            homeConfig = {
+                artworkMetadata: {
+                    1: { title: 'Dreamscape Journey', category: 'illustration', hasShop: true },
+                    2: { title: 'Character Exploration', category: 'concept', hasShop: false },
+                    3: { title: 'Morning Mist', category: 'photography', hasShop: false },
+                    4: { title: 'Storyboard: Act I', category: 'storyboarding', hasShop: false },
+                    5: { title: 'Whimsical Creatures', category: 'illustration', hasShop: true },
+                    6: { title: 'Motion Study', category: 'animation', hasShop: false },
+                    7: { title: 'Fantasy Landscape', category: 'concept', hasShop: false },
+                    8: { title: 'Golden Hour', category: 'photography', hasShop: false },
+                    9: { title: 'Scene Planning', category: 'storyboarding', hasShop: false },
+                    10: { title: 'Magical Forest', category: 'illustration', hasShop: true },
+                    11: { title: 'Character Animation', category: 'animation', hasShop: false },
+                    12: { title: 'Environment Design', category: 'concept', hasShop: false },
+                    13: { title: 'Sunset Portrait', category: 'photography', hasShop: false },
+                    14: { title: 'Comic Panel Study', category: 'storyboarding', hasShop: false },
+                    15: { title: 'Digital Painting', category: 'illustration', hasShop: true }
+                }
+            };
+        }
+        
+        // Generate gallery items
+        const items = PortfolioUtils.Utils.generateArtworkItems(
+            SITE_CONFIG.pages.home.galleryItemCount,
+            homeConfig.artworkMetadata || {},
+            SITE_CONFIG.paths.artwork,
+            SITE_CONFIG.defaultMetadata.artwork.category
+        );
+        
+        // Populate gallery
+        PortfolioUtils.Gallery.populate('galleryGrid', items, {
+            lazyLoad: false,
+            showOverlay: true
+        });
+        
+        // Initialize filter functionality after items are added
+        PortfolioUtils.Gallery.setupFilters();
+    });
+</script>
 </body>
 </html>
