@@ -173,7 +173,7 @@ Secondary Platforms:
 - Cara: @waffles0forart
 
 Shop:
-- Threadless: wafflesforushop.threadless.com
+- Threadless: https://wafflesforartshop.threadless.com/
 ```
 
 ### 5.3 Contact Section

@@ -40,7 +40,7 @@ const SITE_CONFIG = {
                 ]
             },
             { label: 'About', href: 'about.html', active: false },
-            { label: 'Shop', href: 'https://wafflesforushop.threadless.com', external: true }
+            { label: 'Shop', href: 'https://wafflesforartshop.threadless.com/', external: true }
         ]
     },
     
@@ -87,7 +87,7 @@ const SITE_CONFIG = {
             {
                 name: 'Shop',
                 handle: 'Threadless',
-                url: 'https://wafflesforushop.threadless.com',
+                url: 'https://wafflesforartshop.threadless.com/',
                 icon: '🛒',
                 ariaLabel: 'Shop'
             }
@@ -113,7 +113,7 @@ const SITE_CONFIG = {
     
     // --- SHOP CONFIGURATION ---
     shop: {
-        baseUrl: 'https://wafflesforushop.threadless.com/',
+        baseUrl: 'https://wafflesforartshop.threadless.com/',
         enabled: true
     },
     
