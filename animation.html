@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WafflesForArt Animation Portfolio - Character animation, motion graphics, and animated shorts">
+    <meta property="og:title" content="WafflesForArt - Animation Portfolio">
+    <meta property="og:description" content="Explore dynamic animations from character studies to commissioned works">
+    <meta property="og:type" content="website">
+    <title>Animation - WafflesForArt Portfolio</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="logo" aria-label="WafflesForArt Home">
+                <img src="" id="logoImage" alt="WafflesForArt Logo" class="logo-image">
+                WafflesForArt
+            </a>
+
+            <ul class="nav-menu" id="navMenu">
+                <!-- Navigation will be populated by JavaScript -->
+            </ul>
+
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle mobile menu">
+                <span>☰</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Page Hero Section -->
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <a href="index.html">Home</a>
+                <span>/</span>
+                <span>Animation</span>
+            </nav>
+            <h1 class="page-title">Animation Portfolio</h1>
+            <p class="page-description">From fundamental animation exercises to professional commissioned works. Bringing characters and worlds to life through motion and storytelling.</p>
+        </div>
+        <div class="floating-brush"></div>
+        <div class="floating-brush"></div>
+    </section>
+
+    <!-- Stats Bar -->
+    <section class="stats-bar">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-number" id="totalCount">8</div>
+                <div class="stat-label">Animations</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="shopCount">3</div>
+                <div class="stat-label">In Shop</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="commissionStatus">Open</div>
+                <div class="stat-label">Commissions</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalDuration">05:32</div>
+                <div class="stat-label">Total Runtime</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Animation Controls -->
+    <section class="controls-section">
+        <div class="controls-wrapper">
+            <div class="sort-controls">
+                <span class="sort-label">Sort by:</span>
+                <div class="sort-buttons">
+                    <button class="sort-btn active" data-sort="date">Latest</button>
+                    <button class="sort-btn" data-sort="duration">Duration</button>
+                    <button class="sort-btn" data-sort="type">Type</button>
+                </div>
+            </div>
+            <div class="category-filters">
+                <button class="category-tag active" data-category="all">All Types</button>
+                <button class="category-tag" data-category="exercise">Exercise</button>
+                <button class="category-tag" data-category="personal">Personal</button>
+                <button class="category-tag" data-category="commission">Commission</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Animation Gallery -->
+    <section class="animation-gallery" id="animationGallery">
+        <!-- Animation items will be dynamically generated -->
+    </section>
+
+    <!-- Video Lightbox -->
+    <div class="video-lightbox" id="videoLightbox">
+        <div class="video-lightbox-content">
+            <div class="video-container" id="videoContainer">
+                <!-- Video embed will be inserted here -->
+            </div>
+            <div class="video-lightbox-info">
+                <div class="video-lightbox-header">
+                    <h2 class="video-lightbox-title" id="videoLightboxTitle"></h2>
+                    <div class="video-meta">
+                        <span class="duration-badge" id="videoDuration"></span>
+                        <span class="type-badge" id="videoType"></span>
+                        <span class="framerate-info" id="videoFrameRate"></span>
+                    </div>
+                </div>
+
+                <p class="video-lightbox-description" id="videoLightboxDescription"></p>
+
+                <div class="technical-details">
+                    <div class="tech-section">
+                        <h4>Software Used</h4>
+                        <div class="tech-tags" id="softwareTags"></div>
+                    </div>
+
+                    <div class="tech-section">
+                        <h4>Techniques</h4>
+                        <div class="tech-tags" id="techniqueTags"></div>
+                    </div>
+                </div>
+
+                <div class="behind-scenes-section" id="behindScenesSection">
+                    <h4>Behind the Scenes</h4>
+                    <p class="behind-scenes-description" id="behindScenesDescription"></p>
+                    <div class="process-images" id="processImages"></div>
+                    <div class="timelapse-video" id="timelapseContainer"></div>
+                </div>
+
+                <div class="video-lightbox-actions">
+                    <a href="#" class="action-btn primary" id="videoLightboxShop" target="_blank" style="display: none;">View in Shop</a>
+                    <button class="action-btn secondary" id="toggleGifPreview">Show GIF Preview</button>
+                    <button class="action-btn" id="videoLightboxClose">Close</button>
+                </div>
+            </div>
+            <button class="lightbox-close" id="videoLightboxCloseX">×</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="social-links">
+                <!-- Social links will be populated by JavaScript -->
+            </div>
+            <p class="footer-text" id="footerText"></p>
+        </div>
+    </footer>
+
+    <!-- Floating Clouds -->
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/animation.js"></script>
+</body>
+</html>
