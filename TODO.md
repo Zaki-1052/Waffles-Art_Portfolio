@@ -41,3 +41,4 @@
 ### More
 
 - Use linktree at: linktree.xml
+- Verify styling uses ui.css and ui-demo design

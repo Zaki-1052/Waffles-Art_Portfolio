@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WafflesForArt UI Toolkit Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* ===== ROOT VARIABLES ===== */
+        :root {
+            /* Primary Colors */
+            --primary-blue: #7FB4D9;
+            --primary-blue-hover: #6FA4C9;
+            --primary-pink: #FFB5C5;
+            --primary-pink-light: #FFD0DC;
+            
+            /* Neutral Colors */
+            --navy-dark: #1E3A5F;
+            --navy-medium: #2C4E70;
+            --white: #FFFFFF;
+            --off-white: #FAFBFC;
+            --light-gray: #F5F7FA;
+            
+            /* Accent Colors */
+            --accent-coral: #FF9AAB;
+            --accent-yellow: #FFE5B4;
+            --accent-lavender: #E6E6FA;
+            
+            /* Text Colors */
+            --text-primary: #1E3A5F;
+            --text-secondary: #5A6C7D;
+            --text-light: #FFFFFF;
+            --text-muted: #8B95A1;
+            
+            /* Typography */
+            --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --font-display: 'Fredoka', 'Comic Sans MS', cursive;
+            
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 2rem;
+            
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            
+            /* Spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            --spacing-3xl: 4rem;
+            
+            /* Borders & Radius */
+            --border-radius-sm: 0.25rem;
+            --border-radius-md: 0.5rem;
+            --border-radius-lg: 1rem;
+            --border-radius-xl: 1.5rem;
+            --border-radius-full: 9999px;
+            
+            --border-width: 1px;
+            --border-color: rgba(125, 180, 217, 0.2);
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(30, 58, 95, 0.08);
+            --shadow-md: 0 4px 6px rgba(30, 58, 95, 0.1);
+            --shadow-lg: 0 10px 25px rgba(30, 58, 95, 0.12);
+            --shadow-xl: 0 20px 40px rgba(30, 58, 95, 0.15);
+            --shadow-dropdown: 0 4px 12px rgba(30, 58, 95, 0.25);
+            
+            /* Transitions */
+            --transition-fast: 150ms ease-in-out;
+            --transition-base: 250ms ease-in-out;
+            --transition-slow: 350ms ease-in-out;
+            
+            /* Z-Index */
+            --z-dropdown: 100;
+            --z-modal: 200;
+            --z-tooltip: 300;
+            --z-notification: 400;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            color: var(--text-primary);
+            background: var(--off-white);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .nav-header {
+            background: var(--primary-blue);
+            padding: var(--spacing-md) var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            z-index: var(--z-dropdown);
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: var(--font-size-2xl);
+            color: var(--text-light);
+            font-weight: var(--font-weight-bold);
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: var(--spacing-lg);
+            list-style: none;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            transition: background var(--transition-fast);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Dropdown */
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--navy-dark);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-dropdown);
+            padding: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all var(--transition-base);
+        }
+
+        .nav-item:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            color: var(--text-light);
+            padding: var(--spacing-sm) var(--spacing-md);
+            display: block;
+            text-decoration: none;
+            border-radius: var(--border-radius-sm);
+            transition: background var(--transition-fast);
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Cloud Decoration */
+        .cloud-decoration {
+            background: linear-gradient(180deg, 
+                var(--primary-pink) 0%, 
+                var(--primary-pink-light) 50%, 
+                transparent 100%);
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cloud-decoration::before,
+        .cloud-decoration::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            width: 200px;
+            height: 100px;
+            background: var(--primary-pink-light);
+            border-radius: 50%;
+            opacity: 0.8;
+        }
+
+        .cloud-decoration::before {
+            left: 10%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .cloud-decoration::after {
+            right: 20%;
+            animation: float 8s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+
+        /* Typography Section */
+        .typography-section {
+            background: var(--white);
+            padding: var(--spacing-2xl);
+            border-radius: var(--border-radius-lg);
+            margin-bottom: var(--spacing-2xl);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: var(--font-size-3xl);
+            color: var(--primary-blue);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .text-showcase {
+            display: grid;
+            gap: var(--spacing-md);
+        }
+
+        .text-xs { font-size: var(--font-size-xs); }
+        .text-sm { font-size: var(--font-size-sm); }
+        .text-base { font-size: var(--font-size-base); }
+        .text-lg { font-size: var(--font-size-lg); }
+        .text-xl { font-size: var(--font-size-xl); }
+        .text-2xl { font-size: var(--font-size-2xl); }
+        .text-3xl { font-size: var(--font-size-3xl); }
+
+        /* Color Palette */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .color-swatch {
+            padding: var(--spacing-xl) var(--spacing-md);
+            border-radius: var(--border-radius-md);
+            text-align: center;
+            transition: transform var(--transition-base);
+            cursor: pointer;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.05);
+        }
+
+        .color-label {
+            font-size: var(--font-size-xs);
+            margin-top: var(--spacing-sm);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: var(--border-radius-sm);
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-primary);
+            font-weight: var(--font-weight-semibold);
+            transition: all var(--transition-base);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: var(--text-light);
+            border-radius: var(--border-radius-md);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-blue-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--primary-pink);
+            color: var(--navy-dark);
+            border-radius: var(--border-radius-lg);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-coral);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+            border-radius: var(--border-radius-full);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-blue);
+            color: var(--text-light);
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-xl);
+            margin-top: var(--spacing-xl);
+        }
+
+        .art-card {
+            background: var(--white);
+            border-radius: var(--border-radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-base);
+        }
+
+        .art-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-image {
+            height: 200px;
+            background: linear-gradient(135deg, var(--accent-lavender), var(--primary-pink-light));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-image::after {
+            content: '🎨';
+            font-size: 3rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .card-content {
+            padding: var(--spacing-lg);
+        }
+
+        .card-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--navy-dark);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+            line-height: 1.5;
+        }
+
+        /* Spacing Demo */
+        .spacing-demo {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .spacing-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .spacing-box {
+            background: var(--primary-blue);
+            opacity: 0.3;
+        }
+
+        .spacing-xs { width: var(--spacing-xs); height: 20px; }
+        .spacing-sm { width: var(--spacing-sm); height: 20px; }
+        .spacing-md { width: var(--spacing-md); height: 20px; }
+        .spacing-lg { width: var(--spacing-lg); height: 20px; }
+        .spacing-xl { width: var(--spacing-xl); height: 20px; }
+        .spacing-2xl { width: var(--spacing-2xl); height: 20px; }
+        .spacing-3xl { width: var(--spacing-3xl); height: 20px; }
+
+        /* Shadow Demo */
+        .shadow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-xl);
+            margin-top: var(--spacing-xl);
+        }
+
+        .shadow-box {
+            background: var(--white);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-md);
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shadow-sm-demo { box-shadow: var(--shadow-sm); }
+        .shadow-md-demo { box-shadow: var(--shadow-md); }
+        .shadow-lg-demo { box-shadow: var(--shadow-lg); }
+        .shadow-xl-demo { box-shadow: var(--shadow-xl); }
+
+        /* Border Radius Demo */
+        .radius-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
+        }
+
+        .radius-box {
+            background: var(--accent-yellow);
+            padding: var(--spacing-lg);
+            text-align: center;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-sm);
+            color: var(--navy-dark);
+        }
+
+        .radius-sm { border-radius: var(--border-radius-sm); }
+        .radius-md { border-radius: var(--border-radius-md); }
+        .radius-lg { border-radius: var(--border-radius-lg); }
+        .radius-xl { border-radius: var(--border-radius-xl); }
+        .radius-full { border-radius: var(--border-radius-full); }
+
+        /* Footer */
+        .footer {
+            background: var(--navy-dark);
+            color: var(--text-light);
+            padding: var(--spacing-2xl);
+            text-align: center;
+            margin-top: var(--spacing-3xl);
+        }
+
+        .footer-text {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+        }
+
+        /* Notification Demo */
+        .notification {
+            position: fixed;
+            top: var(--spacing-xl);
+            right: var(--spacing-xl);
+            background: var(--accent-coral);
+            color: var(--white);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            z-index: var(--z-notification);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Special Effects */
+        .sparkle {
+            display: inline-block;
+            position: relative;
+        }
+
+        .sparkle::before,
+        .sparkle::after {
+            content: '✨';
+            position: absolute;
+            animation: sparkle 2s infinite;
+        }
+
+        .sparkle::before {
+            top: -10px;
+            left: -10px;
+            animation-delay: 0.5s;
+        }
+
+        .sparkle::after {
+            bottom: -10px;
+            right: -10px;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-header">
+        <div class="nav-content">
+            <a href="#" class="logo">🎨 WafflesForArt</a>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Portfolio</a>
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-item">Illustrations</a>
+                        <a href="#" class="dropdown-item">Digital Art</a>
+                        <a href="#" class="dropdown-item">Sketches</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Shop</a>
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-item">Prints</a>
+                        <a href="#" class="dropdown-item">Stickers</a>
+                        <a href="#" class="dropdown-item">Originals</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Cloud Decoration -->
+    <div class="cloud-decoration"></div>
+
+    <!-- Notification Demo -->
+    <div class="notification">
+        ✨ Welcome to the UI Demo!
+    </div>
+
+    <div class="container">
+        <!-- Typography Section -->
+        <section class="typography-section">
+            <h2 class="section-title">Typography Scale</h2>
+            <div class="text-showcase">
+                <p class="text-3xl" style="font-family: var(--font-display);">Display Font (3xl)</p>
+                <p class="text-2xl">Heading 2XL Size</p>
+                <p class="text-xl">Heading XL Size</p>
+                <p class="text-lg">Large Text Size</p>
+                <p class="text-base">Base Text Size (Default)</p>
+                <p class="text-sm" style="color: var(--text-secondary);">Small Text (Secondary Color)</p>
+                <p class="text-xs" style="color: var(--text-muted);">Extra Small (Muted Color)</p>
+            </div>
+        </section>
+
+        <!-- Color Palette Section -->
+        <section class="typography-section">
+            <h2 class="section-title">Color Palette</h2>
+            <div class="color-grid">
+                <div class="color-swatch" style="background: var(--primary-blue);">
+                    <div class="color-label">Primary Blue</div>
+                </div>
+                <div class="color-swatch" style="background: var(--primary-pink);">
+                    <div class="color-label">Primary Pink</div>
+                </div>
+                <div class="color-swatch" style="background: var(--navy-dark); color: white;">
+                    <div class="color-label">Navy Dark</div>
+                </div>
+                <div class="color-swatch" style="background: var(--accent-coral);">
+                    <div class="color-label">Accent Coral</div>
+                </div>
+                <div class="color-swatch" style="background: var(--accent-yellow);">
+                    <div class="color-label">Accent Yellow</div>
+                </div>
+                <div class="color-swatch" style="background: var(--accent-lavender);">
+                    <div class="color-label">Accent Lavender</div>
+                </div>
+                <div class="color-swatch" style="background: var(--light-gray);">
+                    <div class="color-label">Light Gray</div>
+                </div>
+                <div class="color-swatch" style="background: var(--navy-medium); color: white;">
+                    <div class="color-label">Navy Medium</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Buttons Section -->
+        <section class="typography-section">
+            <h2 class="section-title">Button Variants</h2>
+            <div class="button-group">
+                <button class="btn btn-primary">Primary Button</button>
+                <button class="btn btn-secondary">Secondary Button</button>
+                <button class="btn btn-outline">Outline Button</button>
+                <button class="btn btn-primary" style="border-radius: var(--border-radius-sm);">Small Radius</button>
+                <button class="btn btn-secondary" style="border-radius: var(--border-radius-xl);">XL Radius</button>
+                <button class="btn btn-primary" style="border-radius: var(--border-radius-full);">Pill Button</button>
+            </div>
+        </section>
+
+        <!-- Cards Section -->
+        <section class="typography-section">
+            <h2 class="section-title sparkle">Art Cards</h2>
+            <div class="card-grid">
+                <div class="art-card">
+                    <div class="card-image" style="background: linear-gradient(135deg, var(--primary-pink), var(--accent-coral));"></div>
+                    <div class="card-content">
+                        <h3 class="card-title">Dreamy Sunset</h3>
+                        <p class="card-description">A whimsical interpretation of golden hour with soft pastels and flowing forms.</p>
+                    </div>
+                </div>
+                <div class="art-card">
+                    <div class="card-image" style="background: linear-gradient(135deg, var(--primary-blue), var(--accent-lavender));"></div>
+                    <div class="card-content">
+                        <h3 class="card-title">Ocean Dreams</h3>
+                        <p class="card-description">Exploring the depths of imagination through waves of color and emotion.</p>
+                    </div>
+                </div>
+                <div class="art-card">
+                    <div class="card-image" style="background: linear-gradient(135deg, var(--accent-yellow), var(--primary-pink-light));"></div>
+                    <div class="card-content">
+                        <h3 class="card-title">Spring Bloom</h3>
+                        <p class="card-description">Celebrating new beginnings with vibrant florals and gentle morning light.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Spacing Section -->
+        <section class="typography-section">
+            <h2 class="section-title">Spacing System</h2>
+            <div class="spacing-demo">
+                <div class="spacing-item">
+                    <div class="spacing-box spacing-xs"></div>
+                    <span>XS (4px)</span>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-box spacing-sm"></div>
+                    <span>SM (8px)</span>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-box spacing-md"></div>
+                    <span>MD (16px)</span>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-box spacing-lg"></div>
+                    <span>LG (24px)</span>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-box spacing-xl"></div>
+                    <span>XL (32px)</span>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-box spacing-2xl"></div>
+                    <span>2XL (48px)</span>
+                </div>
+                <div class="spacing-item">
+                    <div class="spacing-box spacing-3xl"></div>
+                    <span>3XL (64px)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Shadows Section -->
+        <section class="typography-section">
+            <h2 class="section-title">Shadow Effects</h2>
+            <div class="shadow-grid">
+                <div class="shadow-box shadow-sm-demo">Shadow SM</div>
+                <div class="shadow-box shadow-md-demo">Shadow MD</div>
+                <div class="shadow-box shadow-lg-demo">Shadow LG</div>
+                <div class="shadow-box shadow-xl-demo">Shadow XL</div>
+            </div>
+        </section>
+
+        <!-- Border Radius Section -->
+        <section class="typography-section">
+            <h2 class="section-title">Border Radius</h2>
+            <div class="radius-grid">
+                <div class="radius-box radius-sm">Small (4px)</div>
+                <div class="radius-box radius-md">Medium (8px)</div>
+                <div class="radius-box radius-lg">Large (16px)</div>
+                <div class="radius-box radius-xl">XL (24px)</div>
+                <div class="radius-box radius-full">Full (Pill)</div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <h3 style="font-family: var(--font-display); font-size: var(--font-size-xl); margin-bottom: var(--spacing-md);">
+            WafflesForArt UI Toolkit Demo
+        </h3>
+        <p class="footer-text">Showcasing all design system variables with font weights: 
+            <span style="font-weight: var(--font-weight-normal);">Normal</span> | 
+            <span style="font-weight: var(--font-weight-medium);">Medium</span> | 
+            <span style="font-weight: var(--font-weight-semibold);">Semibold</span> | 
+            <span style="font-weight: var(--font-weight-bold);">Bold</span>
+        </p>
+        <p class="footer-text" style="margin-top: var(--spacing-md);">
+            Transitions: Fast (150ms) | Base (250ms) | Slow (350ms)
+        </p>
+    </footer>
+</body>
+</html>

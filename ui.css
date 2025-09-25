@@ -1,0 +1,134 @@
+/* ===== COLOR PALETTE ===== */
+:root {
+  /* Primary Colors */
+  --primary-blue: #7FB4D9;      /* Soft sky blue - header/nav */
+  --primary-blue-hover: #6FA4C9; /* Slightly darker for hover states */
+  --primary-pink: #FFB5C5;      /* Soft pink - cloud accents */
+  --primary-pink-light: #FFD0DC; /* Lighter pink variant */
+  
+  /* Neutral Colors */
+  --navy-dark: #1E3A5F;         /* Dark navy - dropdown menus, text */
+  --navy-medium: #2C4E70;       /* Medium navy - secondary elements */
+  --white: #FFFFFF;              /* Pure white - backgrounds */
+  --off-white: #FAFBFC;         /* Slight off-white - subtle backgrounds */
+  --light-gray: #F5F7FA;        /* Very light gray - section backgrounds */
+  
+  /* Accent Colors */
+  --accent-coral: #FF9AAB;      /* Coral pink - highlights */
+  --accent-yellow: #FFE5B4;     /* Soft yellow - star elements */
+  --accent-lavender: #E6E6FA;   /* Soft lavender - subtle accents */
+  
+  /* Text Colors */
+  --text-primary: #1E3A5F;      /* Navy for main text */
+  --text-secondary: #5A6C7D;    /* Muted blue-gray */
+  --text-light: #FFFFFF;        /* White text on dark backgrounds */
+  --text-muted: #8B95A1;        /* Muted gray for secondary info */
+  
+  /* ===== TYPOGRAPHY ===== */
+  --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Fredoka', 'Comic Sans MS', cursive; /* Playful header font */
+  
+  --font-size-xs: 0.75rem;      /* 12px */
+  --font-size-sm: 0.875rem;     /* 14px */
+  --font-size-base: 1rem;       /* 16px */
+  --font-size-lg: 1.125rem;     /* 18px */
+  --font-size-xl: 1.25rem;      /* 20px */
+  --font-size-2xl: 1.5rem;      /* 24px */
+  --font-size-3xl: 2rem;        /* 32px */
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* ===== SPACING ===== */
+  --spacing-xs: 0.25rem;         /* 4px */
+  --spacing-sm: 0.5rem;          /* 8px */
+  --spacing-md: 1rem;            /* 16px */
+  --spacing-lg: 1.5rem;          /* 24px */
+  --spacing-xl: 2rem;            /* 32px */
+  --spacing-2xl: 3rem;           /* 48px */
+  --spacing-3xl: 4rem;           /* 64px */
+  
+  /* ===== BORDERS & RADIUS ===== */
+  --border-radius-sm: 0.25rem;   /* 4px - subtle rounding */
+  --border-radius-md: 0.5rem;    /* 8px - buttons, cards */
+  --border-radius-lg: 1rem;      /* 16px - larger elements */
+  --border-radius-xl: 1.5rem;    /* 24px - hero sections */
+  --border-radius-full: 9999px;  /* Pills, circular elements */
+  
+  --border-width: 1px;
+  --border-color: rgba(125, 180, 217, 0.2);
+  
+  /* ===== SHADOWS ===== */
+  --shadow-sm: 0 1px 3px rgba(30, 58, 95, 0.08);
+  --shadow-md: 0 4px 6px rgba(30, 58, 95, 0.1);
+  --shadow-lg: 0 10px 25px rgba(30, 58, 95, 0.12);
+  --shadow-xl: 0 20px 40px rgba(30, 58, 95, 0.15);
+  --shadow-dropdown: 0 4px 12px rgba(30, 58, 95, 0.25);
+  
+  /* ===== TRANSITIONS ===== */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+  
+  /* ===== Z-INDEX LAYERS ===== */
+  --z-dropdown: 100;
+  --z-modal: 200;
+  --z-tooltip: 300;
+  --z-notification: 400;
+}
+
+/* ===== COMPONENT STYLES ===== */
+
+/* Navigation Bar */
+.nav-header {
+  background: var(--primary-blue);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Dropdown Menus */
+.dropdown-menu {
+  background: var(--navy-dark);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-dropdown);
+}
+
+/* Cloud/Wave Decorations */
+.decorative-clouds {
+  background: linear-gradient(180deg, 
+    var(--primary-pink) 0%, 
+    var(--primary-pink-light) 50%, 
+    transparent 100%);
+  border-radius: 0 0 50% 50% / 0 0 20% 20%;
+}
+
+/* Cards */
+.art-card {
+  background: var(--white);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), 
+              box-shadow var(--transition-base);
+}
+
+.art-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Buttons */
+.button-primary {
+  background: var(--primary-blue);
+  color: var(--text-light);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  transition: all var(--transition-base);
+}
+
+.button-primary:hover {
+  background: var(--primary-blue-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
