@@ -13,9 +13,11 @@
     /* Neutral Colors */
     --navy-dark: #1E3A5F;
     --navy-medium: #2C4E70;
+    --navy-light: #6B8CAE;
     --white: #FFFFFF;
     --off-white: #FAFBFC;
     --light-gray: #F5F7FA;
+    --bg-light: #F8FBFF;
     
     /* Accent Colors */
     --coral: #FF9AAB;
@@ -47,6 +49,8 @@
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
     --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+    --shadow-soft: 0 2px 10px rgba(127, 180, 217, 0.15);
+    --shadow-hover: 0 8px 25px rgba(127, 180, 217, 0.25);
     
     /* Transitions */
     --transition-fast: 0.15s ease;

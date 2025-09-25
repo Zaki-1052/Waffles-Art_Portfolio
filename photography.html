@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WafflesForArt Photography - Coming Soon! Beautiful photography portfolio launching January 2025">
+    <meta property="og:title" content="Photography Coming Soon - WafflesForArt">
+    <meta property="og:description" content="Exciting photography portfolio launching January 2025">
+    <meta property="og:type" content="website">
+    <title>Photography Coming Soon - WafflesForArt</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="logo" aria-label="WafflesForArt Home">
+                <img src="" id="logoImage" alt="WafflesForArt Logo" class="logo-image">
+                WafflesForArt
+            </a>
+
+            <ul class="nav-menu" id="navMenu">
+                <!-- Navigation will be populated by JavaScript -->
+            </ul>
+
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle mobile menu">
+                <span>☰</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Page Hero Section -->
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <a href="index.html">Home</a>
+                <span>/</span>
+                <span>Photography</span>
+            </nav>
+            <h1 class="page-title">Photography Portfolio</h1>
+            <p class="page-description">A new dimension to my artistic journey - capturing moments through the lens</p>
+        </div>
+        <div class="floating-brush"></div>
+        <div class="floating-brush"></div>
+    </section>
+
+    <!-- Coming Soon Hero -->
+    <section class="coming-soon-section">
+        <div class="coming-soon-content">
+            <div class="coming-soon-badge">
+                <span>📸</span>
+                <span>Coming Soon</span>
+            </div>
+
+            <h2 class="coming-soon-title">Photography Portfolio</h2>
+            <p class="coming-soon-message">
+                I'm expanding my artistic vision beyond digital illustration into the world of photography.
+                Get ready to see life through my lens - capturing the same whimsical magic in real moments.
+            </p>
+
+            <!-- Countdown Timer -->
+            <div class="countdown-container">
+                <div class="countdown-header">
+                    <h3>Launching in:</h3>
+                    <div class="launch-date">January 1, 2025</div>
+                </div>
+
+                <div class="countdown-timer" id="countdownTimer">
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="days">--</div>
+                        <div class="countdown-label">Days</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="hours">--</div>
+                        <div class="countdown-label">Hours</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="minutes">--</div>
+                        <div class="countdown-label">Minutes</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="seconds">--</div>
+                        <div class="countdown-label">Seconds</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Newsletter Signup -->
+            <div class="newsletter-section">
+                <h3>Be the first to know!</h3>
+                <p>Get notified when my photography portfolio goes live, plus exclusive behind-the-scenes content.</p>
+
+                <form class="newsletter-form" id="newsletterForm">
+                    <input
+                        type="email"
+                        class="newsletter-input"
+                        placeholder="Enter your email"
+                        required
+                        aria-label="Email address for newsletter"
+                        id="emailInput"
+                    >
+                    <button type="submit" class="newsletter-btn">
+                        <span id="buttonText">Notify Me</span>
+                        <span id="buttonLoader" class="loader" style="display: none;"></span>
+                    </button>
+                </form>
+
+                <div class="newsletter-message" id="newsletterMessage" style="display: none;"></div>
+
+                <div class="newsletter-benefits">
+                    <div class="benefit-item">
+                        <span class="benefit-icon">🎨</span>
+                        <span>Behind-the-scenes content</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">📅</span>
+                        <span>Early access to galleries</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">💌</span>
+                        <span>Monthly artist updates</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preview Gallery Section -->
+    <section class="preview-section">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">What to Expect</h2>
+                <p class="section-subtitle">A glimpse into the photographic journey ahead</p>
+            </div>
+
+            <div class="preview-gallery" id="previewGallery">
+                <!-- Preview images will be dynamically generated -->
+            </div>
+
+            <div class="preview-description">
+                <p>From whimsical nature scenes to intimate portraits, my photography will capture the same magical essence you love in my illustrations. Each shot will tell a story, evoke emotion, and bring a touch of wonder to everyday moments.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="timeline-section">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Development Timeline</h2>
+                <p class="section-subtitle">Follow my photographic journey</p>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item completed">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3>Equipment Setup</h3>
+                        <p>Acquired professional photography gear and set up my mobile studio</p>
+                        <span class="timeline-date">September 2024</span>
+                    </div>
+                </div>
+
+                <div class="timeline-item completed">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3>Skill Development</h3>
+                        <p>Intensive photography workshops and technique practice sessions</p>
+                        <span class="timeline-date">October 2024</span>
+                    </div>
+                </div>
+
+                <div class="timeline-item in-progress">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3>Portfolio Shooting</h3>
+                        <p>Currently building a diverse collection of signature photographic works</p>
+                        <span class="timeline-date">November - December 2024</span>
+                    </div>
+                </div>
+
+                <div class="timeline-item upcoming">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3>Portfolio Launch</h3>
+                        <p>Official photography portfolio goes live with 30+ curated images</p>
+                        <span class="timeline-date">January 1, 2025</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Connect Section -->
+    <section class="connect-section">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Stay Connected</h2>
+                <p class="section-subtitle">Follow my artistic journey across platforms</p>
+            </div>
+
+            <div class="social-preview" id="socialPreview">
+                <!-- Social links will be populated by JavaScript -->
+            </div>
+
+            <div class="update-promise">
+                <div class="promise-icon">✨</div>
+                <div class="promise-content">
+                    <h3>Behind-the-Scenes Updates</h3>
+                    <p>I'm sharing the entire journey on social media - from equipment tests to location scouting, technique experiments to final edits. Follow along for exclusive glimpses into my photography development!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="social-links">
+                <!-- Social links will be populated by JavaScript -->
+            </div>
+            <p class="footer-text" id="footerText"></p>
+        </div>
+    </footer>
+
+    <!-- Floating Clouds -->
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/photography.js"></script>
+</body>
+</html>
