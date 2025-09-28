@@ -4,66 +4,38 @@
    DESIGN SYSTEM - Core Variables
    ============================================================================ */
 
+/* Import ui.css design system variables */
+@import url('ui.css');
+
 :root {
-    /* Primary Colors */
-    --sky-blue: #7FB4D9;
-    --soft-pink: #FFB5C5;
-    --light-pink: #FFD0DC;
-    
-    /* Neutral Colors */
-    --navy-dark: #1E3A5F;
-    --navy-medium: #2C4E70;
-    --navy-light: #6B8CAE;
-    --white: #FFFFFF;
-    --off-white: #FAFBFC;
-    --light-gray: #F5F7FA;
+    /* Namespace conflict resolution - map ui.css variables to legacy names */
+    --sky-blue: var(--primary-blue);
+    --soft-pink: var(--primary-pink);
+    --light-pink: var(--primary-pink-light);
+
+    --navy-dark: var(--navy-dark);
+    --navy-medium: var(--navy-medium);
+    --white: var(--white);
+    --off-white: var(--off-white);
+    --light-gray: var(--light-gray);
+
+    --coral: var(--accent-coral);
+    --soft-yellow: var(--accent-yellow);
+    --lavender: var(--accent-lavender);
+
+    /* Use ui.css typography */
+    --font-display: var(--font-display);
+    --font-body: var(--font-primary);
+
+    /* Z-index from ui.css */
+    --z-base: var(--z-base);
+    --z-dropdown: var(--z-dropdown);
+    --z-modal: var(--z-modal);
+    --z-tooltip: var(--z-tooltip);
+
+    /* Custom variables not in ui.css */
     --bg-light: #F8FBFF;
-    
-    /* Accent Colors */
-    --coral: #FF9AAB;
-    --soft-yellow: #FFE5B4;
-    --lavender: #E6E6FA;
-    
-    /* Typography */
-    --font-display: 'Fredoka', cursive;
-    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    
-    /* Spacing Scale */
-    --spacing-xs: 0.5rem;
-    --spacing-sm: 0.75rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-    --spacing-3xl: 4rem;
-    
-    /* Border Radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
-    --radius-full: 9999px;
-    
-    /* Shadows */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
-    --shadow-soft: 0 2px 10px rgba(127, 180, 217, 0.15);
-    --shadow-hover: 0 8px 25px rgba(127, 180, 217, 0.25);
-    
-    /* Transitions */
-    --transition-fast: 0.15s ease;
-    --transition-base: 0.3s ease;
-    --transition-slow: 0.6s ease;
-    
-    /* Z-Index Scale */
-    --z-base: 1;
-    --z-dropdown: 100;
-    --z-sticky: 500;
-    --z-overlay: 900;
-    --z-modal: 1000;
-    --z-tooltip: 1100;
+    --navbar-height: 80px;
 }
 
 /* ============================================================================
@@ -143,6 +115,8 @@ p {
     z-index: var(--z-modal);
     backdrop-filter: blur(10px);
     background: linear-gradient(135deg, var(--sky-blue) 0%, rgba(127, 180, 217, 0.95) 100%);
+    --navbar-height: 80px;
+    min-height: var(--navbar-height);
 }
 
 .nav-container {
@@ -191,7 +165,7 @@ p {
     color: var(--white);
     font-weight: 500;
     padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--radius-sm);
+    border-radius: var(--border-radius-sm);
     transition: all var(--transition-base);
     display: flex;
     align-items: center;
@@ -219,7 +193,7 @@ p {
     left: 0;
     background: var(--navy-dark);
     min-width: 200px;
-    border-radius: var(--radius-md);
+    border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-xl);
     opacity: 0;
     visibility: hidden;
@@ -242,11 +216,11 @@ p {
 }
 
 .dropdown a:first-child {
-    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
 }
 
 .dropdown a:last-child {
-    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
 }
 
 .dropdown a:hover,
@@ -258,6 +232,20 @@ p {
     display: none;
     color: var(--white);
     font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    transition: transform var(--transition-base);
+}
+
+.mobile-menu-toggle span {
+    display: block;
+    transition: all var(--transition-base);
+}
+
+.mobile-menu-toggle.active span {
+    transform: rotate(45deg);
 }
 
 /* ============================================================================
@@ -294,13 +282,31 @@ p {
     justify-content: center;
     width: 40px;
     height: 40px;
-    border-radius: var(--radius-full);
+    border-radius: var(--border-radius-full);
     background: rgba(255, 255, 255, 0.1);
 }
 
 .social-link:hover {
     background: var(--soft-pink);
     transform: translateY(-3px);
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.social-icon svg {
+    width: 20px;
+    height: 20px;
+    transition: all var(--transition-base);
+}
+
+.social-link:hover .social-icon svg {
+    transform: scale(1.1);
 }
 
 .footer-text {
@@ -314,7 +320,7 @@ p {
 
 .btn {
     padding: var(--spacing-md) var(--spacing-xl);
-    border-radius: var(--radius-full);
+    border-radius: var(--border-radius-full);
     font-weight: 600;
     cursor: pointer;
     transition: all var(--transition-base);
@@ -357,7 +363,7 @@ p {
 .gallery-item {
     position: relative;
     background: var(--white);
-    border-radius: var(--radius-md);
+    border-radius: var(--border-radius-md);
     overflow: hidden;
     box-shadow: var(--shadow-md);
     transition: all var(--transition-base);
@@ -576,17 +582,36 @@ p {
     .nav-menu {
         position: fixed;
         left: -100%;
-        top: 60px;
+        top: 0;
+        height: 100vh;
         flex-direction: column;
         background: var(--navy-dark);
         width: 100%;
         text-align: center;
-        transition: 0.3s;
-        padding: var(--spacing-lg) 0;
+        transition: left var(--transition-base);
+        padding-top: calc(var(--navbar-height, 80px) + var(--spacing-lg));
+        padding-left: var(--spacing-lg);
+        padding-right: var(--spacing-lg);
+        padding-bottom: var(--spacing-lg);
+        z-index: var(--z-modal);
+        overflow-y: auto;
     }
-    
+
     .nav-menu.active {
         left: 0;
+    }
+
+    /* Mobile menu backdrop */
+    .nav-menu.active::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: -1;
+        backdrop-filter: blur(4px);
     }
     
     .nav-item {

@@ -29,22 +29,77 @@ const PortfolioUtils = (function() {
         setupMobileMenu() {
             const toggle = document.getElementById('mobileMenuToggle');
             const menu = document.getElementById('navMenu');
-            
-            if (!toggle || !menu) return;
-            
-            toggle.addEventListener('click', () => {
-                menu.classList.toggle('active');
+            const navbar = document.querySelector('.navbar');
+
+            if (!toggle || !menu || !navbar) return;
+
+            // Calculate and set navbar height dynamically
+            const updateNavbarHeight = () => {
+                const height = navbar.getBoundingClientRect().height;
+                document.documentElement.style.setProperty('--navbar-height', `${height}px`);
+            };
+
+            // Initial calculation
+            updateNavbarHeight();
+
+            // Update on resize
+            window.addEventListener('resize', updateNavbarHeight);
+
+            toggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
                 const isActive = menu.classList.contains('active');
-                toggle.innerHTML = isActive ? '<span>✕</span>' : '<span>☰</span>';
-            });
-            
-            // Close menu when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-                    menu.classList.remove('active');
-                    toggle.innerHTML = '<span>☰</span>';
+
+                if (isActive) {
+                    this.closeMobileMenu(toggle, menu);
+                } else {
+                    this.openMobileMenu(toggle, menu);
                 }
             });
+
+            // Close menu when clicking outside or on backdrop
+            document.addEventListener('click', (e) => {
+                if (menu.classList.contains('active') &&
+                    !toggle.contains(e.target) &&
+                    !menu.contains(e.target)) {
+                    this.closeMobileMenu(toggle, menu);
+                }
+            });
+
+            // Close menu on escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && menu.classList.contains('active')) {
+                    this.closeMobileMenu(toggle, menu);
+                }
+            });
+
+            // Close menu when clicking on menu links
+            menu.addEventListener('click', (e) => {
+                if (e.target.tagName === 'A' && e.target.getAttribute('href') !== '#') {
+                    this.closeMobileMenu(toggle, menu);
+                }
+            });
+        },
+
+        /**
+         * Open mobile menu with animation
+         */
+        openMobileMenu(toggle, menu) {
+            menu.classList.add('active');
+            toggle.classList.add('active');
+            toggle.innerHTML = '<span>✕</span>';
+            document.body.style.overflow = 'hidden';
+        },
+
+        /**
+         * Close mobile menu with animation
+         */
+        closeMobileMenu(toggle, menu) {
+            menu.classList.remove('active');
+            toggle.classList.remove('active');
+            toggle.innerHTML = '<span>☰</span>';
+            document.body.style.overflow = '';
         },
 
         /**
@@ -536,43 +591,15 @@ const PortfolioUtils = (function() {
         buildSocialLinks(config) {
             const container = document.querySelector('.social-links');
             if (!container || !config.socialMedia) return;
-            
+
             container.innerHTML = '';
-            
-            // Use all social media links
+
+            // Combine primary and secondary social media links
             const allSocial = [
-                {
-                    name: 'TikTok',
-                    icon: '🎵',
-                    url: 'https://www.tiktok.com/@waffles_forart',
-                    ariaLabel: 'TikTok'
-                },
-                {
-                    name: 'Instagram',
-                    icon: '📷',
-                    url: 'https://www.instagram.com/waffles_forart',
-                    ariaLabel: 'Instagram'
-                },
-                {
-                    name: 'YouTube',
-                    icon: '▶️',
-                    url: 'https://www.youtube.com/@waffles_forart',
-                    ariaLabel: 'YouTube'
-                },
-                {
-                    name: 'ArtFight',
-                    icon: '🎨',
-                    url: 'https://artfight.net/~waffles_forart',
-                    ariaLabel: 'ArtFight'
-                },
-                {
-                    name: 'Cara',
-                    icon: '✨',
-                    url: 'https://cara.app/waffles0forart',
-                    ariaLabel: 'Cara'
-                }
+                ...config.socialMedia.primary,
+                ...config.socialMedia.secondary
             ];
-            
+
             allSocial.forEach(social => {
                 const link = document.createElement('a');
                 link.href = social.url;
@@ -580,11 +607,13 @@ const PortfolioUtils = (function() {
                 link.target = '_blank';
                 link.rel = 'noopener';
                 link.setAttribute('aria-label', social.ariaLabel);
-                
-                const icon = document.createElement('span');
-                icon.textContent = social.icon;
-                link.appendChild(icon);
-                
+
+                // Create icon container for SVG
+                const iconContainer = document.createElement('span');
+                iconContainer.className = 'social-icon';
+                iconContainer.innerHTML = social.icon;
+
+                link.appendChild(iconContainer);
                 container.appendChild(link);
             });
         },
@@ -689,9 +718,96 @@ const PortfolioUtils = (function() {
     };
 
     // ============================================================================
+    // COMPONENTS MODULE
+    // ============================================================================
+
+    const Components = {
+        /**
+         * Generate navigation HTML from config
+         */
+        generateNavigation(config) {
+            const nav = document.createElement('nav');
+            nav.className = 'navbar';
+            nav.setAttribute('role', 'navigation');
+            nav.setAttribute('aria-label', 'Main navigation');
+
+            nav.innerHTML = `
+                <div class="nav-container">
+                    <a href="index.html" class="logo" aria-label="${config.siteName} Home">
+                        <img src="" id="logoImage" alt="${config.siteName} Logo" class="logo-image">
+                        ${config.siteName}
+                    </a>
+
+                    <ul class="nav-menu" id="navMenu">
+                        <!-- Navigation will be populated by JavaScript -->
+                    </ul>
+
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle mobile menu">
+                        <span>☰</span>
+                    </button>
+                </div>
+            `;
+
+            return nav;
+        },
+
+        /**
+         * Generate footer HTML from config
+         */
+        generateFooter(config) {
+            const footer = document.createElement('footer');
+            footer.className = 'footer';
+
+            footer.innerHTML = `
+                <div class="footer-content">
+                    <div class="social-links">
+                        <!-- Social links will be populated by JavaScript -->
+                    </div>
+                    <p class="footer-text" id="footerText">© ${config.copyrightYear} ${config.siteName}. All artwork is original and protected by copyright.</p>
+                </div>
+            `;
+
+            return footer;
+        },
+
+        /**
+         * Generate floating clouds HTML
+         */
+        generateClouds() {
+            const clouds = [];
+            for (let i = 1; i <= 3; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = `cloud cloud${i}`;
+                clouds.push(cloud);
+            }
+            return clouds;
+        },
+
+        /**
+         * Insert components into page
+         */
+        insertComponents(config) {
+            const body = document.body;
+
+            // Insert navigation at the beginning
+            const nav = this.generateNavigation(config);
+            body.insertBefore(nav, body.firstChild);
+
+            // Insert footer before scripts
+            const scripts = body.querySelector('script');
+            const footer = this.generateFooter(config);
+            body.insertBefore(footer, scripts);
+
+            // Insert clouds at the end
+            const clouds = this.generateClouds();
+            clouds.forEach(cloud => body.appendChild(cloud));
+        }
+    };
+
+    // ============================================================================
     // PUBLIC API
     // ============================================================================
-    
+
     return {
         Navigation,
         Gallery,
@@ -699,11 +815,17 @@ const PortfolioUtils = (function() {
         Hero,
         Utils,
         Lightbox,
+        Components,
         
         /**
          * Initialize all modules
          */
         init(config) {
+            // Insert components if they don't already exist
+            if (!document.querySelector('.navbar')) {
+                Components.insertComponents(config);
+            }
+
             // Core initialization
             Utils.initializePage(config);
             Navigation.init();
