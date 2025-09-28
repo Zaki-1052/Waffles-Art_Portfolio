@@ -36,6 +36,8 @@
     /* Custom variables not in ui.css */
     --bg-light: #F8FBFF;
     --navbar-height: 80px;
+    --container-max-width: 1200px;
+    --body-line-height: 1.6;
 }
 
 /* ============================================================================
@@ -55,9 +57,9 @@ html {
 
 body {
     font-family: var(--font-body);
-    line-height: 1.6;
+    line-height: var(--body-line-height);
     color: var(--navy-dark);
-    background: linear-gradient(to bottom, #F0F8FF 0%, var(--white) 20%);
+    background: linear-gradient(to bottom, var(--off-white) 0%, var(--white) 20%);
     min-height: 100vh;
     overflow-x: hidden;
 }
@@ -114,13 +116,13 @@ p {
     box-shadow: var(--shadow-md);
     z-index: var(--z-modal);
     backdrop-filter: blur(10px);
-    background: linear-gradient(135deg, var(--sky-blue) 0%, rgba(127, 180, 217, 0.95) 100%);
+    background: linear-gradient(135deg, var(--sky-blue) 0%, var(--primary-blue-hover) 100%);
     --navbar-height: 80px;
     min-height: var(--navbar-height);
 }
 
 .nav-container {
-    max-width: 1200px;
+    max-width: var(--container-max-width);
     margin: 0 auto;
     padding: 0 var(--spacing-lg);
     display: flex;
@@ -260,7 +262,7 @@ p {
 }
 
 .footer-content {
-    max-width: 1200px;
+    max-width: var(--container-max-width);
     margin: 0 auto;
     padding: 0 var(--spacing-lg);
     text-align: center;
@@ -356,8 +358,10 @@ p {
 
 .gallery-grid {
     padding: 0 var(--spacing-lg);
-    column-count: 3;
-    column-gap: var(--spacing-lg);
+    display: grid;
+    gap: var(--spacing-lg);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    /* Masonry layout will be handled by JavaScript */
 }
 
 .gallery-item {
@@ -422,13 +426,13 @@ p {
 
 .gallery-section {
     padding: var(--spacing-2xl) 0;
-    max-width: 1200px;
+    max-width: var(--container-max-width);
     margin: 0 auto;
 }
 
 .content-section {
     padding: var(--spacing-2xl) 0;
-    max-width: 1200px;
+    max-width: var(--container-max-width);
     margin: 0 auto;
 }
 
@@ -442,13 +446,14 @@ p {
 
 .cloud {
     position: fixed;
-    background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.9) 0%, 
-        rgba(255, 181, 197, 0.3) 100%);
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.9) 0%,
+        var(--primary-pink-light) 100%);
     border-radius: 100px;
     opacity: 0.7;
     filter: blur(2px);
     z-index: -1;
+    transition: transform var(--transition-slow), opacity var(--transition-slow);
 }
 
 .cloud::before,
@@ -457,6 +462,23 @@ p {
     position: absolute;
     background: inherit;
     border-radius: inherit;
+    animation: cloudMorph 8s ease-in-out infinite;
+}
+
+.cloud::before {
+    width: 60%;
+    height: 80%;
+    top: -20%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.cloud::after {
+    width: 80%;
+    height: 60%;
+    top: 10%;
+    right: -10%;
+    animation-delay: 2s;
 }
 
 .sparkle {
@@ -502,13 +524,79 @@ p {
 }
 
 @keyframes float {
-    from { transform: translateX(0); }
-    to { transform: translateX(calc(100vw + 200px)); }
+    0% {
+        transform: translateX(0) translateY(0) scale(1);
+        opacity: 0.7;
+    }
+    25% {
+        transform: translateX(25vw) translateY(-10px) scale(1.05);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translateX(50vw) translateY(-20px) scale(0.95);
+        opacity: 0.6;
+    }
+    75% {
+        transform: translateX(75vw) translateY(-5px) scale(1.02);
+        opacity: 0.75;
+    }
+    100% {
+        transform: translateX(calc(100vw + 200px)) translateY(0) scale(1);
+        opacity: 0.7;
+    }
 }
 
 @keyframes floatReverse {
-    from { transform: translateX(0); }
-    to { transform: translateX(calc(-100vw - 200px)); }
+    0% {
+        transform: translateX(0) translateY(0) scale(1);
+        opacity: 0.7;
+    }
+    25% {
+        transform: translateX(-25vw) translateY(-15px) scale(1.03);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translateX(-50vw) translateY(-8px) scale(0.97);
+        opacity: 0.65;
+    }
+    75% {
+        transform: translateX(-75vw) translateY(-12px) scale(1.01);
+        opacity: 0.75;
+    }
+    100% {
+        transform: translateX(calc(-100vw - 200px)) translateY(0) scale(1);
+        opacity: 0.7;
+    }
+}
+
+@keyframes cloudMorph {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        border-radius: 100px;
+    }
+    25% {
+        transform: scale(1.1) rotate(2deg);
+        border-radius: 80px 120px 90px 110px;
+    }
+    50% {
+        transform: scale(0.9) rotate(-1deg);
+        border-radius: 120px 80px 110px 90px;
+    }
+    75% {
+        transform: scale(1.05) rotate(1deg);
+        border-radius: 90px 110px 100px 95px;
+    }
+}
+
+@keyframes cloudBreathe {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.9;
+    }
 }
 
 @keyframes sparkle {
@@ -574,7 +662,7 @@ p {
 
 @media (max-width: 1024px) {
     .gallery-grid {
-        column-count: 2;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     }
 }
 
@@ -639,7 +727,7 @@ p {
     }
     
     .gallery-grid {
-        column-count: 1;
+        grid-template-columns: 1fr;
     }
     
     h1 { font-size: 2.5rem; }

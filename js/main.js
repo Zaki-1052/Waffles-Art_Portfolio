@@ -398,40 +398,57 @@ const PortfolioUtils = (function() {
         },
 
         /**
-         * Create floating cloud elements
+         * Create floating cloud elements with whimsical animations
          */
         setupClouds() {
             // Don't create clouds if they already exist
             if (document.querySelector('.cloud')) return;
-            
-            const cloudCount = 3;
+
+            const cloudCount = 5; // Increased count for more whimsy
             const cloudContainer = document.body;
-            
+
             for (let i = 1; i <= cloudCount; i++) {
                 const cloud = document.createElement('div');
                 cloud.className = `cloud cloud${i}`;
-                
-                // Set random starting position and animation
+
+                // Generate varied cloud sizes
+                const baseSize = 80 + Math.random() * 60; // 80-140px
+                const aspectRatio = 0.3 + Math.random() * 0.4; // 0.3-0.7 ratio
+
+                cloud.style.width = `${baseSize}px`;
+                cloud.style.height = `${baseSize * aspectRatio}px`;
+
+                // Varied positioning and animations
                 if (i === 1) {
-                    cloud.style.width = '100px';
-                    cloud.style.height = '40px';
-                    cloud.style.top = '20%';
-                    cloud.style.left = '-100px';
-                    cloud.style.animation = 'float 20s infinite';
+                    cloud.style.top = '15%';
+                    cloud.style.left = '-150px';
+                    cloud.style.animation = `float 25s infinite linear, cloudBreathe 6s ease-in-out infinite`;
+                    cloud.style.animationDelay = '0s, 1s';
                 } else if (i === 2) {
-                    cloud.style.width = '80px';
-                    cloud.style.height = '35px';
-                    cloud.style.top = '40%';
+                    cloud.style.top = '35%';
+                    cloud.style.right = '-120px';
+                    cloud.style.animation = `floatReverse 30s infinite linear, cloudBreathe 8s ease-in-out infinite`;
+                    cloud.style.animationDelay = '5s, 2s';
+                } else if (i === 3) {
+                    cloud.style.bottom = '25%';
+                    cloud.style.left = '-100px';
+                    cloud.style.animation = `float 35s infinite linear, cloudBreathe 7s ease-in-out infinite`;
+                    cloud.style.animationDelay = '10s, 0s';
+                } else if (i === 4) {
+                    cloud.style.top = '60%';
                     cloud.style.right = '-80px';
-                    cloud.style.animation = 'floatReverse 25s infinite';
+                    cloud.style.animation = `floatReverse 28s infinite linear, cloudBreathe 9s ease-in-out infinite`;
+                    cloud.style.animationDelay = '15s, 3s';
                 } else {
-                    cloud.style.width = '120px';
-                    cloud.style.height = '45px';
-                    cloud.style.bottom = '30%';
-                    cloud.style.left = '-120px';
-                    cloud.style.animation = 'float 30s infinite 5s';
+                    cloud.style.top = '8%';
+                    cloud.style.left = '-200px';
+                    cloud.style.animation = `float 40s infinite linear, cloudBreathe 5s ease-in-out infinite`;
+                    cloud.style.animationDelay = '20s, 4s';
                 }
-                
+
+                // Add random opacity variation
+                cloud.style.opacity = (0.5 + Math.random() * 0.3).toFixed(2);
+
                 cloudContainer.appendChild(cloud);
             }
         },
@@ -798,9 +815,9 @@ const PortfolioUtils = (function() {
             const footer = this.generateFooter(config);
             body.insertBefore(footer, scripts);
 
-            // Insert clouds at the end
-            const clouds = this.generateClouds();
-            clouds.forEach(cloud => body.appendChild(cloud));
+            // Note: Clouds are handled by Animations.setupClouds() for dynamic generation
+            //const clouds = this.generateClouds();
+            //clouds.forEach(cloud => body.appendChild(cloud));
         }
     };
 
@@ -821,35 +838,37 @@ const PortfolioUtils = (function() {
          * Initialize all modules
          */
         init(config) {
-            // Insert components if they don't already exist
-            if (!document.querySelector('.navbar')) {
+            try {
+                // Always insert components since we removed static HTML
                 Components.insertComponents(config);
-            }
 
-            // Core initialization
-            Utils.initializePage(config);
-            Navigation.init();
-            Gallery.init();
-            
-            // Optional features based on config
-            if (config.features.animations) {
-                Animations.init();
-            }
-            
-            // Page-specific initialization
-            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-            
-            if (currentPage === 'index.html' || currentPage === '') {
-                Hero.setRandomImage(config);
-                
-                // Handle window resize
-                let resizeTimer;
-                window.addEventListener('resize', () => {
-                    clearTimeout(resizeTimer);
-                    resizeTimer = setTimeout(() => {
-                        Hero.setRandomImage(config);
-                    }, 250);
-                });
+                // Core initialization
+                Utils.initializePage(config);
+                Navigation.init();
+                Gallery.init();
+
+                // Optional features based on config
+                if (config.features && config.features.animations) {
+                    Animations.init();
+                }
+
+                // Page-specific initialization
+                const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+                if (currentPage === 'index.html' || currentPage === '') {
+                    Hero.setRandomImage(config);
+
+                    // Handle window resize
+                    let resizeTimer;
+                    window.addEventListener('resize', () => {
+                        clearTimeout(resizeTimer);
+                        resizeTimer = setTimeout(() => {
+                            Hero.setRandomImage(config);
+                        }, 250);
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing PortfolioUtils:', error);
             }
         }
     };
