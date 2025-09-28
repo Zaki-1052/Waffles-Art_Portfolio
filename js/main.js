@@ -228,14 +228,22 @@ const PortfolioUtils = (function() {
         populate(containerId, items, options = {}) {
             const container = document.getElementById(containerId);
             if (!container) return;
-            
+
             container.innerHTML = '';
-            
+
+            // Prepare container for masonry layout
+            container.style.position = 'relative';
+
             items.forEach((item, index) => {
                 const element = this.createGalleryItem(item, index, options);
                 container.appendChild(element);
             });
-            
+
+            // Initialize masonry layout
+            if (options.useMasonry !== false) {
+                this.Masonry.init(container, options);
+            }
+
             // Trigger lazy loading
             if (options.lazyLoad) {
                 this.observeImages();
@@ -251,17 +259,31 @@ const PortfolioUtils = (function() {
             div.dataset.category = item.category || 'uncategorized';
             div.style.animationDelay = `${index * 0.1}s`;
             
+            // Image container for loading states
+            const imgContainer = document.createElement('div');
+            imgContainer.className = 'gallery-image-container';
+
             // Image
             const img = document.createElement('img');
-            img.src = options.lazyLoad ? '' : item.image;
             img.dataset.src = item.image;
             img.alt = item.title || `Artwork ${index + 1}`;
             img.className = 'gallery-image';
+
             if (options.lazyLoad) {
                 img.classList.add('lazy');
                 img.loading = 'lazy';
+
+                // Add loading skeleton
+                const skeleton = document.createElement('div');
+                skeleton.className = 'image-skeleton';
+                imgContainer.appendChild(skeleton);
+
+                // Don't set src initially for lazy loading
+                img.src = '';
+            } else {
+                img.src = item.image;
             }
-            
+
             // Fallback to placeholder
             img.onerror = () => {
                 // Generate varied dimensions for placeholders
@@ -271,8 +293,9 @@ const PortfolioUtils = (function() {
                 const height = heights[Math.floor(Math.random() * heights.length)];
                 img.src = `https://picsum.photos/${width}/${height}?random=${index + 20}`;
             };
-            
-            div.appendChild(img);
+
+            imgContainer.appendChild(img);
+            div.appendChild(imgContainer);
             
             // Shop indicator
             if (item.hasShop) {
@@ -315,19 +338,19 @@ const PortfolioUtils = (function() {
         setupFilters() {
             const filterButtons = document.querySelectorAll('.filter-btn');
             const galleryItems = document.querySelectorAll('.gallery-item');
-            
+
             filterButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     // Update active state
                     filterButtons.forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
-                    
+
                     const filterValue = button.dataset.filter;
-                    
+
                     // Filter items
                     galleryItems.forEach((item, index) => {
                         const shouldShow = filterValue === 'all' || item.dataset.category === filterValue;
-                        
+
                         if (shouldShow) {
                             item.style.display = 'block';
                             // Re-animate
@@ -339,6 +362,14 @@ const PortfolioUtils = (function() {
                             item.style.display = 'none';
                         }
                     });
+
+                    // Recalculate masonry layout after filtering
+                    setTimeout(() => {
+                        const container = document.querySelector('.gallery-grid');
+                        if (container && this.Masonry && this.Masonry.container === container) {
+                            this.Masonry.reflow();
+                        }
+                    }, 50);
                 });
             });
         },
@@ -358,7 +389,7 @@ const PortfolioUtils = (function() {
         },
 
         /**
-         * Observe images for lazy loading
+         * Observe images for lazy loading with masonry layout integration
          */
         observeImages() {
             const imageObserver = new IntersectionObserver((entries, observer) => {
@@ -366,20 +397,255 @@ const PortfolioUtils = (function() {
                     if (entry.isIntersecting) {
                         const img = entry.target;
                         if (img.dataset.src) {
+                            // Load the image
                             img.src = img.dataset.src;
                             img.classList.remove('lazy');
+
+                            // Handle loading completion
+                            img.addEventListener('load', () => {
+                                this.handleImageLoaded(img);
+                            });
+
+                            img.addEventListener('error', () => {
+                                this.handleImageLoaded(img);
+                            });
+
                             observer.unobserve(img);
                         }
                     }
                 });
             }, {
-                rootMargin: '50px 0px',
+                rootMargin: '100px 0px', // Load images slightly before they come into view
                 threshold: 0.01
             });
-            
+
             document.querySelectorAll('img.lazy').forEach(img => {
                 imageObserver.observe(img);
             });
+        },
+
+        /**
+         * Handle image loaded event for masonry integration
+         */
+        handleImageLoaded(img) {
+            // Remove skeleton loading state
+            const container = img.closest('.gallery-image-container');
+            if (container) {
+                const skeleton = container.querySelector('.image-skeleton');
+                if (skeleton) {
+                    skeleton.remove();
+                }
+            }
+
+            // Trigger masonry reflow if masonry is active
+            const galleryContainer = img.closest('.gallery-grid');
+            if (galleryContainer && this.Masonry && this.Masonry.container === galleryContainer) {
+                // Debounce multiple image loads
+                clearTimeout(this.reflowTimer);
+                this.reflowTimer = setTimeout(() => {
+                    this.Masonry.reflow();
+                }, 100);
+            }
+        },
+
+        /**
+         * Masonry layout sub-module
+         */
+        Masonry: {
+            columnHeights: [],
+            containerWidth: 0,
+            columnWidth: 0,
+            columnCount: 0,
+            gap: 24,
+
+            /**
+             * Initialize masonry layout
+             */
+            init(container, options = {}) {
+                this.container = container;
+                this.options = {
+                    minColumnWidth: options.minColumnWidth || 300,
+                    gap: options.gap || 24,
+                    ...options
+                };
+
+                // Set responsive gap based on screen size
+                this.setResponsiveGap();
+
+                this.calculateLayout();
+                this.positionItems();
+                this.setupResizeHandler();
+            },
+
+            /**
+             * Set responsive gap sizes
+             */
+            setResponsiveGap() {
+                const containerWidth = this.container.offsetWidth;
+                if (containerWidth <= 480) {
+                    this.options.gap = 16; // Smaller gap on mobile
+                } else if (containerWidth <= 768) {
+                    this.options.gap = 20; // Medium gap on tablets
+                } else {
+                    this.options.gap = 24; // Full gap on desktop
+                }
+            },
+
+            /**
+             * Calculate layout parameters with responsive breakpoints
+             */
+            calculateLayout() {
+                this.containerWidth = this.container.offsetWidth;
+                this.gap = this.options.gap;
+
+                // Responsive column count based on viewport width
+                let maxColumns;
+                if (this.containerWidth <= 480) {
+                    maxColumns = 1; // Single column on very small screens
+                } else if (this.containerWidth <= 768) {
+                    maxColumns = 2; // Two columns on mobile/small tablets
+                } else if (this.containerWidth <= 1024) {
+                    maxColumns = 3; // Three columns on tablets
+                } else {
+                    maxColumns = 4; // Four columns on desktop and larger
+                }
+
+                // Calculate column count based on container width, minimum column width, and max columns
+                const possibleColumns = Math.floor(this.containerWidth / (this.options.minColumnWidth + this.gap));
+                this.columnCount = Math.max(1, Math.min(maxColumns, possibleColumns));
+
+                // Calculate actual column width
+                this.columnWidth = (this.containerWidth - (this.gap * (this.columnCount - 1))) / this.columnCount;
+
+                // Initialize column heights
+                this.columnHeights = new Array(this.columnCount).fill(0);
+            },
+
+            /**
+             * Position all gallery items using masonry algorithm
+             */
+            positionItems() {
+                const items = this.container.querySelectorAll('.gallery-item');
+                let loadedImages = 0;
+                const totalImages = items.length;
+
+                items.forEach((item) => {
+                    // Position item initially (may need repositioning after image loads)
+                    this.positionItem(item);
+
+                    // Wait for image to load before final positioning
+                    const img = item.querySelector('.gallery-image');
+                    if (img) {
+                        if (img.complete && img.naturalHeight !== 0) {
+                            // Image already loaded
+                            this.repositionItem(item);
+                            loadedImages++;
+                            if (loadedImages === totalImages) {
+                                this.finalizeLayout();
+                            }
+                        } else {
+                            // Wait for image to load
+                            img.addEventListener('load', () => {
+                                this.repositionItem(item);
+                                loadedImages++;
+                                if (loadedImages === totalImages) {
+                                    this.finalizeLayout();
+                                }
+                            });
+
+                            img.addEventListener('error', () => {
+                                // Even on error, count as loaded for layout completion
+                                loadedImages++;
+                                if (loadedImages === totalImages) {
+                                    this.finalizeLayout();
+                                }
+                            });
+                        }
+                    }
+                });
+            },
+
+            /**
+             * Position a single item in the masonry grid
+             */
+            positionItem(item) {
+                // Find the shortest column
+                const shortestColumnIndex = this.columnHeights.indexOf(Math.min(...this.columnHeights));
+
+                // Calculate position
+                const x = shortestColumnIndex * (this.columnWidth + this.gap);
+                const y = this.columnHeights[shortestColumnIndex];
+
+                // Apply positioning
+                item.style.position = 'absolute';
+                item.style.left = `${x}px`;
+                item.style.top = `${y}px`;
+                item.style.width = `${this.columnWidth}px`;
+                item.style.transition = 'all 0.3s ease';
+
+                // Store column index for later reference
+                item.dataset.columnIndex = shortestColumnIndex;
+            },
+
+            /**
+             * Reposition item after image has loaded
+             */
+            repositionItem(item) {
+                const columnIndex = parseInt(item.dataset.columnIndex);
+                const itemHeight = item.offsetHeight;
+
+                // Update column height
+                this.columnHeights[columnIndex] += itemHeight + this.gap;
+            },
+
+            /**
+             * Finalize layout by setting container height
+             */
+            finalizeLayout() {
+                const maxHeight = Math.max(...this.columnHeights);
+                this.container.style.height = `${maxHeight - this.gap}px`;
+            },
+
+            /**
+             * Recalculate and reposition all items (for responsive behavior)
+             */
+            reflow() {
+                // Reset container
+                this.container.style.height = 'auto';
+
+                // Update responsive gap
+                this.setResponsiveGap();
+
+                // Recalculate layout
+                this.calculateLayout();
+
+                // Reset all item positioning
+                const items = this.container.querySelectorAll('.gallery-item');
+                items.forEach(item => {
+                    item.style.position = '';
+                    item.style.left = '';
+                    item.style.top = '';
+                    item.style.width = '';
+                });
+
+                // Reposition items
+                this.positionItems();
+            },
+
+            /**
+             * Setup responsive resize handler
+             */
+            setupResizeHandler() {
+                let resizeTimer;
+                const debouncedResize = () => {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(() => {
+                        this.reflow();
+                    }, 250);
+                };
+
+                window.addEventListener('resize', debouncedResize);
+            }
         }
     };
 
@@ -500,36 +766,79 @@ const PortfolioUtils = (function() {
     
     const Hero = {
         /**
-         * Set random hero image based on device
+         * Set random hero image based on device with session persistence
          */
         setRandomImage(config) {
             const heroImg = document.getElementById('heroImage');
             if (!heroImg) return;
-            
+
             const isMobile = window.innerWidth <= 768;
             const images = isMobile ? config.pages.home.heroImagesMobile : config.pages.home.heroImagesDesktop;
             const basePath = isMobile ? config.paths.heroMobile : config.paths.heroDesktop;
-            
+
             if (!images || images.length === 0) {
                 console.warn('No hero images configured');
-                heroImg.src = `https://picsum.photos/${isMobile ? '1080/1920' : '1920/1080'}?random=1`;
+                const fallbackSeed = this.getSessionSeed();
+                heroImg.src = `https://picsum.photos/${isMobile ? '1080/1920' : '1920/1080'}?random=${fallbackSeed}`;
                 return;
             }
-            
-            const randomIndex = Math.floor(Math.random() * images.length);
+
+            // Get persistent random index for this session
+            const deviceKey = isMobile ? 'mobile' : 'desktop';
+            const randomIndex = this.getPersistedImageIndex(images.length, deviceKey);
+
             heroImg.src = basePath + images[randomIndex];
-            
+
             // Fallback to placeholder
             heroImg.onerror = () => {
-                const fallbackIndex = randomIndex + 1;
+                const fallbackSeed = this.getSessionSeed();
                 if (isMobile) {
                     // Use portrait placeholder for mobile
-                    heroImg.src = `https://picsum.photos/1080/1920?random=${fallbackIndex}`;
+                    heroImg.src = `https://picsum.photos/1080/1920?random=${fallbackSeed}`;
                 } else {
                     // Use landscape placeholder for desktop
-                    heroImg.src = `https://picsum.photos/1920/1080?random=${fallbackIndex}`;
+                    heroImg.src = `https://picsum.photos/1920/1080?random=${fallbackSeed}`;
                 }
             };
+        },
+
+        /**
+         * Get or create a persistent random seed for this session
+         */
+        getSessionSeed() {
+            let seed = sessionStorage.getItem('hero-seed');
+            if (!seed) {
+                seed = Math.floor(Math.random() * 10000);
+                sessionStorage.setItem('hero-seed', seed);
+            }
+            return parseInt(seed);
+        },
+
+        /**
+         * Get persistent image index for device type
+         */
+        getPersistedImageIndex(imageCount, deviceKey) {
+            const storageKey = `hero-index-${deviceKey}`;
+            let index = sessionStorage.getItem(storageKey);
+
+            if (index === null || parseInt(index) >= imageCount) {
+                // Generate new index based on session seed for consistency
+                const seed = this.getSessionSeed();
+                index = seed % imageCount;
+                sessionStorage.setItem(storageKey, index);
+            }
+
+            return parseInt(index);
+        },
+
+        /**
+         * Force refresh hero image (useful for device orientation changes)
+         */
+        refreshForDeviceChange(config) {
+            // Clear device-specific storage to allow new selection
+            sessionStorage.removeItem('hero-index-mobile');
+            sessionStorage.removeItem('hero-index-desktop');
+            this.setRandomImage(config);
         }
     };
 
@@ -858,12 +1167,23 @@ const PortfolioUtils = (function() {
                 if (currentPage === 'index.html' || currentPage === '') {
                     Hero.setRandomImage(config);
 
-                    // Handle window resize
+                    // Handle window resize with device orientation change detection
                     let resizeTimer;
+                    let previousIsMobile = window.innerWidth <= 768;
+
                     window.addEventListener('resize', () => {
                         clearTimeout(resizeTimer);
                         resizeTimer = setTimeout(() => {
-                            Hero.setRandomImage(config);
+                            const currentIsMobile = window.innerWidth <= 768;
+
+                            // If device type changed (mobile to desktop or vice versa), refresh hero
+                            if (currentIsMobile !== previousIsMobile) {
+                                Hero.refreshForDeviceChange(config);
+                                previousIsMobile = currentIsMobile;
+                            } else {
+                                // Same device type, just use existing image
+                                Hero.setRandomImage(config);
+                            }
                         }, 250);
                     });
                 }
