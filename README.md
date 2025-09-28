@@ -1,6 +1,6 @@
-# CLAUDE.md
+# DOCS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Note: This documentation is outdated and will be updated at a later timepoint, when the code is significantly changed.
 
 ## Portfolio Architecture
 
