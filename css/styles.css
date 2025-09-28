@@ -8,30 +8,14 @@
 @import url('ui.css');
 
 :root {
-    /* Namespace conflict resolution - map ui.css variables to legacy names */
+    /* Map ui.css variables to legacy names (only where names actually change) */
     --sky-blue: var(--primary-blue);
     --soft-pink: var(--primary-pink);
     --light-pink: var(--primary-pink-light);
-
-    --navy-dark: var(--navy-dark);
-    --navy-medium: var(--navy-medium);
-    --white: var(--white);
-    --off-white: var(--off-white);
-    --light-gray: var(--light-gray);
-
     --coral: var(--accent-coral);
     --soft-yellow: var(--accent-yellow);
     --lavender: var(--accent-lavender);
-
-    /* Use ui.css typography */
-    --font-display: var(--font-display);
     --font-body: var(--font-primary);
-
-    /* Z-index from ui.css */
-    --z-base: var(--z-base);
-    --z-dropdown: var(--z-dropdown);
-    --z-modal: var(--z-modal);
-    --z-tooltip: var(--z-tooltip);
 
     /* Custom variables not in ui.css */
     --bg-light: #F8FBFF;
