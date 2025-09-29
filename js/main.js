@@ -1207,11 +1207,17 @@ const PortfolioUtils = (function() {
         updateParticles(deltaTime) {
             if (!this.ctx || !this.config.particles?.enabled) return;
 
-            // Clear canvas with trail effect
-            if (this.config.particles.trail !== false) {
-                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            // Handle canvas clearing with optional proper trail effect
+            if (this.config.particles.trail) {
+                // Proper trail effect using composite operations (doesn't darken screen)
+                this.ctx.save();
+                this.ctx.globalCompositeOperation = 'destination-out';
+                this.ctx.globalAlpha = 0.1;
+                this.ctx.fillStyle = 'rgba(255, 255, 255, 1)';
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.restore();
             } else {
+                // Clear canvas completely
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             }
 
