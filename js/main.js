@@ -766,12 +766,148 @@ const PortfolioUtils = (function() {
 
     const ButterflyCursor = {
         butterfly: null,
+        canvas: null,
+        ctx: null,
         mousePos: { x: 0, y: 0 },
         butterflyPos: { x: 0, y: 0 },
         lastMousePos: { x: 0, y: 0 },
         velocity: 0,
         animationFrame: null,
         config: {},
+        particles: [],
+        particlePool: [],
+        maxParticles: 100,
+        time: 0,
+
+        /**
+         * Particle class for sparkle trail effects
+         */
+        Particle: class {
+            constructor(x, y, velocity, config) {
+                // Position and movement
+                this.x = x;
+                this.y = y;
+                this.baseX = x;
+                this.baseY = y;
+
+                // Physics properties
+                this.vx = (Math.random() - 0.5) * 3;
+                this.vy = (Math.random() - 0.5) * 3 - 1;
+                this.gravity = 0.02;
+
+                // Visual properties
+                this.size = Math.random() * (config.sizeRange?.[1] || 3) + (config.sizeRange?.[0] || 1);
+                this.opacity = 1;
+                this.rotation = 0;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.3;
+
+                // Color selection
+                const colors = config.colors || ['#7FB4D9', '#FFB3CC', '#FFFFFF'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+
+                // Wave motion
+                this.waveAmplitude = config.waveAmplitude || 15;
+                this.waveFrequency = 0.015 + Math.random() * 0.02;
+                this.wavePhase = Math.random() * Math.PI * 2;
+
+                // Lifecycle
+                this.fadeSpeed = 0.012 + Math.random() * 0.008;
+                this.sparklePhase = Math.random() * Math.PI * 2;
+                this.life = 1.0;
+                this.maxLife = config.lifespan || 2000;
+                this.age = 0;
+            }
+
+            update(time, deltaTime) {
+                this.age += deltaTime;
+
+                // Wave motion
+                const waveX = Math.sin(time * this.waveFrequency + this.wavePhase) * this.waveAmplitude;
+                const waveY = Math.cos(time * this.waveFrequency * 0.7 + this.wavePhase) * this.waveAmplitude * 0.5;
+
+                // Update physics
+                this.vx *= 0.98; // Air resistance
+                this.vy += this.gravity;
+                this.baseX += this.vx * (deltaTime / 16); // Normalize for 60fps
+                this.baseY += this.vy * (deltaTime / 16);
+
+                // Apply wave motion
+                this.x = this.baseX + waveX;
+                this.y = this.baseY + waveY;
+
+                // Update visual properties
+                this.life = Math.max(0, 1 - (this.age / this.maxLife));
+                this.opacity = this.life * 0.8;
+                this.rotation += this.rotationSpeed * (deltaTime / 16);
+                this.size *= 0.995; // Slight shrink over time
+
+                // Sparkle intensity
+                this.sparkleIntensity = Math.sin(time * 0.05 + this.sparklePhase) * 0.3 + 0.7;
+
+                return this.life > 0;
+            }
+
+            draw(ctx) {
+                if (this.opacity <= 0) return;
+
+                ctx.save();
+                ctx.globalAlpha = this.opacity * this.sparkleIntensity;
+
+                // Move to particle position
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+
+                // Create radial gradient
+                const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size * 3);
+
+                // Convert CSS variables to actual colors
+                let color = this.color;
+                if (color.startsWith('var(')) {
+                    // Fallback colors if CSS variables don't work
+                    const colorMap = {
+                        'var(--sky-blue)': '#7FB4D9',
+                        'var(--soft-pink)': '#FFB3CC',
+                        'var(--white)': '#FFFFFF',
+                        'var(--coral)': '#FF6B9D'
+                    };
+                    color = colorMap[color] || '#7FB4D9';
+                }
+
+                gradient.addColorStop(0, color + 'FF');
+                gradient.addColorStop(0.5, color + '88');
+                gradient.addColorStop(1, color + '00');
+
+                ctx.fillStyle = gradient;
+
+                // Draw star shape
+                const spikes = 4;
+                const outerRadius = this.size * 2;
+                const innerRadius = this.size * 0.5;
+
+                ctx.beginPath();
+                for (let i = 0; i < spikes * 2; i++) {
+                    const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                    const angle = (i * Math.PI) / spikes;
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.closePath();
+                ctx.fill();
+
+                // Add glow effect
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = color;
+                ctx.fill();
+
+                ctx.restore();
+            }
+        },
 
         /**
          * Initialize butterfly cursor
@@ -784,6 +920,7 @@ const PortfolioUtils = (function() {
                 return;
             }
 
+            this.createCanvas();
             this.createButterfly();
             this.attachEventListeners();
             this.startAnimation();
@@ -805,6 +942,36 @@ const PortfolioUtils = (function() {
             }
 
             return true;
+        },
+
+        /**
+         * Create canvas for particle rendering
+         */
+        createCanvas() {
+            this.canvas = document.createElement('canvas');
+            this.canvas.id = 'butterfly-particles-canvas';
+            this.canvas.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                pointer-events: none;
+                z-index: 9999;
+                width: 100vw;
+                height: 100vh;
+            `;
+
+            // Set canvas size
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+
+            this.ctx = this.canvas.getContext('2d');
+            document.body.appendChild(this.canvas);
+
+            // Handle resize
+            window.addEventListener('resize', () => {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            });
         },
 
         /**
@@ -926,10 +1093,13 @@ const PortfolioUtils = (function() {
             this.mousePos.x = e.clientX;
             this.mousePos.y = e.clientY;
 
-            // Calculate velocity for wing animation
+            // Calculate velocity for wing animation and particle generation
             const dx = this.mousePos.x - this.lastMousePos.x;
             const dy = this.mousePos.y - this.lastMousePos.y;
             this.velocity = Math.sqrt(dx * dx + dy * dy);
+
+            // Generate particles based on velocity
+            this.generateParticles(dx, dy);
 
             this.lastMousePos.x = this.mousePos.x;
             this.lastMousePos.y = this.mousePos.y;
@@ -972,11 +1142,106 @@ const PortfolioUtils = (function() {
         },
 
         /**
+         * Generate particles based on movement
+         */
+        generateParticles(dx, dy) {
+            if (!this.config.particles?.enabled || !this.ctx) return;
+
+            const particleConfig = this.config.particles;
+            const particlesToGenerate = Math.min(
+                Math.ceil(this.velocity / 3),
+                particleConfig.emissionRate || 5
+            );
+
+            if (particlesToGenerate === 0) return;
+
+            for (let i = 0; i < particlesToGenerate; i++) {
+                // Get particle from pool or create new one
+                let particle = this.getParticleFromPool();
+                if (!particle) {
+                    particle = new this.Particle(0, 0, this.velocity, particleConfig);
+                }
+
+                // Position particles behind butterfly in fan pattern
+                const angle = Math.atan2(dy, dx) + Math.PI; // Opposite direction of movement
+                const spread = Math.PI / 4; // 45 degree spread
+                const particleAngle = angle + (Math.random() - 0.5) * spread;
+                const distance = 20 + i * 8;
+
+                const offsetX = Math.cos(particleAngle) * distance + (Math.random() - 0.5) * 15;
+                const offsetY = Math.sin(particleAngle) * distance + (Math.random() - 0.5) * 15;
+
+                // Reset particle properties
+                particle.x = this.butterflyPos.x + offsetX;
+                particle.y = this.butterflyPos.y + offsetY;
+                particle.baseX = particle.x;
+                particle.baseY = particle.y;
+                particle.life = 1.0;
+                particle.age = 0;
+                particle.wavePhase = Math.random() * Math.PI * 2;
+
+                // Adjust initial velocity based on butterfly movement
+                particle.vx = (Math.random() - 0.5) * 2 + dx * 0.1;
+                particle.vy = (Math.random() - 0.5) * 2 + dy * 0.1 - 1;
+
+                this.particles.push(particle);
+            }
+
+            // Limit total particles for performance
+            if (this.particles.length > this.maxParticles) {
+                const excess = this.particles.splice(0, this.particles.length - this.maxParticles);
+                this.particlePool.push(...excess);
+            }
+        },
+
+        /**
+         * Get particle from pool for reuse
+         */
+        getParticleFromPool() {
+            return this.particlePool.pop() || null;
+        },
+
+        /**
+         * Update and render all particles
+         */
+        updateParticles(deltaTime) {
+            if (!this.ctx || !this.config.particles?.enabled) return;
+
+            // Clear canvas with trail effect
+            if (this.config.particles.trail !== false) {
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            } else {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+            // Update and draw particles
+            this.particles = this.particles.filter(particle => {
+                const isAlive = particle.update(this.time, deltaTime);
+
+                if (isAlive) {
+                    particle.draw(this.ctx);
+                    return true;
+                } else {
+                    // Return dead particle to pool
+                    this.particlePool.push(particle);
+                    return false;
+                }
+            });
+        },
+
+        /**
          * Start animation loop
          */
         startAnimation() {
-            const animate = () => {
+            let lastTime = 0;
+
+            const animate = (currentTime) => {
                 if (!this.butterfly) return;
+
+                const deltaTime = currentTime - lastTime;
+                lastTime = currentTime;
+                this.time = currentTime;
 
                 // Smooth following with lag
                 const followLag = this.config.followLag || 0.15;
@@ -997,10 +1262,13 @@ const PortfolioUtils = (function() {
                     this.butterfly.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
                 }
 
+                // Update particles
+                this.updateParticles(deltaTime);
+
                 this.animationFrame = requestAnimationFrame(animate);
             };
 
-            animate();
+            animate(0);
         },
 
         /**
@@ -1015,6 +1283,16 @@ const PortfolioUtils = (function() {
                 this.butterfly.remove();
                 this.butterfly = null;
             }
+
+            if (this.canvas) {
+                this.canvas.remove();
+                this.canvas = null;
+                this.ctx = null;
+            }
+
+            // Clear particles
+            this.particles = [];
+            this.particlePool = [];
 
             // Restore default cursor
             const style = document.getElementById('butterfly-cursor-style');

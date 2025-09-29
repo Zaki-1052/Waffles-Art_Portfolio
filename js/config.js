@@ -68,7 +68,18 @@ const baseConfig = {
             enabled: true,
             size: 40,
             followLag: 0.15,
-            flapSpeed: 'auto'
+            flapSpeed: 'auto',
+            particles: {
+                enabled: true,
+                emissionRate: 5,
+                maxCount: 100,
+                colors: ['#7FB4D9', '#FFB3CC', '#FFFFFF', '#FF6B9D'],
+                sizeRange: [1, 4],
+                lifespan: 2000,
+                waveAmplitude: 15,
+                sparkle: true,
+                trail: true
+            }
         },
         persona: {
             enabled: true,
