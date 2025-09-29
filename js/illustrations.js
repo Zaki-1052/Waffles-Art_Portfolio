@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <p class="illustration-description">${item.description}</p>
             <div class="illustration-actions">
                 ${item.hasShop ? `<a href="${SITE_CONFIG.shop.baseUrl}${item.shopLink}" class="action-btn primary" target="_blank">Shop</a>` : ''}
-                <button class="action-btn" onclick="openLightbox(${item.id})">View</button>
+                <button class="action-btn view-btn" data-item-id="${item.id}">View</button>
             </div>
         `;
 
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Click handler for entire item
         div.addEventListener('click', (e) => {
             if (!e.target.classList.contains('action-btn')) {
-                openLightbox(item.id);
+                openIllustrationLightbox(item.id);
             }
         });
 
@@ -185,26 +185,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 populateGallery();
             });
         });
+
+        // Event delegation for view buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('view-btn')) {
+                const itemId = parseInt(e.target.dataset.itemId);
+                openIllustrationLightbox(itemId);
+            }
+        });
     }
 
     /**
      * Open lightbox with illustration details
-     * Made global so it can be called from onclick handlers
+     * Local function that uses PortfolioUtils.Lightbox
      */
-    window.openLightbox = function(id) {
+    function openIllustrationLightbox(id) {
         const item = illustrationsData.find(i => i.id === id);
         if (!item || !PortfolioUtils.Lightbox) return;
 
         PortfolioUtils.Lightbox.open(item, SITE_CONFIG.paths.artworkByCategory.illustration);
-    };
-
-    /**
-     * Close lightbox
-     * Made global for accessibility
-     */
-    window.closeLightbox = function() {
-        if (PortfolioUtils.Lightbox) {
-            PortfolioUtils.Lightbox.close();
-        }
-    };
+    }
 });

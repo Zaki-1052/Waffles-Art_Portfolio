@@ -88,7 +88,7 @@ const PortfolioUtils = (function() {
         openMobileMenu(toggle, menu) {
             menu.classList.add('active');
             toggle.classList.add('active');
-            toggle.innerHTML = '<span>✕</span>';
+            // CSS handles the hamburger to X animation
             document.body.style.overflow = 'hidden';
         },
 
@@ -98,7 +98,7 @@ const PortfolioUtils = (function() {
         closeMobileMenu(toggle, menu) {
             menu.classList.remove('active');
             toggle.classList.remove('active');
-            toggle.innerHTML = '<span>☰</span>';
+            // CSS handles the X to hamburger animation
             document.body.style.overflow = '';
         },
 
@@ -899,14 +899,23 @@ const PortfolioUtils = (function() {
         },
 
         /**
-         * Set logo image
+         * Set logo image with graceful fallback
          */
         setLogo(config) {
             const logoImg = document.getElementById('logoImage');
             if (logoImg) {
                 logoImg.src = config.paths.logo + 'logo.png';
+                logoImg.alt = config.siteName + ' Logo';
+
                 logoImg.onerror = () => {
-                    console.warn('Logo not found at', config.paths.logo + 'logo.png');
+                    console.warn('Logo not found at', config.paths.logo + 'logo.png', '- hiding logo image');
+                    // Hide the logo image gracefully and rely on text
+                    logoImg.style.display = 'none';
+                };
+
+                logoImg.onload = () => {
+                    // Ensure logo is visible when it loads successfully
+                    logoImg.style.display = '';
                 };
             }
         },
@@ -1069,7 +1078,7 @@ const PortfolioUtils = (function() {
                     </ul>
 
                     <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle mobile menu">
-                        <span>☰</span>
+                        <span></span>
                     </button>
                 </div>
             `;

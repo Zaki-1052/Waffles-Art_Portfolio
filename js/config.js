@@ -1123,7 +1123,7 @@ const SITE_CONFIG = {
                     title: 'Character Walk Cycle Study',
                     description: 'Classic animation exercise exploring different personality types through walk cycles. Features a cheerful forest creature discovering the joy of movement.',
                     duration: '00:15',
-                    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                    videoUrl: 'https://www.youtube.com/embed/placeholder-walk-cycle',
                     videoType: 'youtube',
                     date: '2024-12-01',
                     projectType: 'exercise',
@@ -1138,7 +1138,7 @@ const SITE_CONFIG = {
                         hasContent: true,
                         description: 'Started with rough gesture drawings to establish different personality types, then refined timing and spacing for each character variant.',
                         processImages: ['animation1-process-1.png', 'animation1-process-2.png'],
-                        timelapseVideo: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+                        timelapseVideo: 'https://www.youtube.com/embed/placeholder-timelapse'
                     },
                     tags: ['walk-cycle', 'character-animation', 'fundamentals']
                 },
@@ -1178,7 +1178,7 @@ const SITE_CONFIG = {
                     title: 'Bouncing Ball with Personality',
                     description: 'Advanced bouncing ball exercise that tells a story. The ball shows emotions and reacts to its environment, demonstrating squash and stretch principles.',
                     duration: '00:20',
-                    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                    videoUrl: 'https://www.youtube.com/embed/placeholder-bouncing-ball',
                     videoType: 'youtube',
                     date: '2024-11-20',
                     projectType: 'exercise',
@@ -1193,7 +1193,7 @@ const SITE_CONFIG = {
                         hasContent: true,
                         description: 'Classic animation fundamental elevated with storytelling. Focused on making a simple ball feel alive and full of character.',
                         processImages: ['animation3-process-1.png'],
-                        timelapseVideo: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+                        timelapseVideo: 'https://www.youtube.com/embed/placeholder-timelapse'
                     },
                     tags: ['bouncing-ball', 'fundamentals', 'character']
                 },
@@ -1233,7 +1233,7 @@ const SITE_CONFIG = {
                     title: 'Coffee Shop Morning Rush',
                     description: 'Charming 2D animation loop showing the busy morning atmosphere of a cozy coffee shop with various woodland creature customers.',
                     duration: '00:45',
-                    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                    videoUrl: 'https://www.youtube.com/embed/placeholder-coffee-shop',
                     videoType: 'youtube',
                     date: '2024-11-10',
                     projectType: 'personal',
@@ -1249,7 +1249,7 @@ const SITE_CONFIG = {
                         hasContent: true,
                         description: 'Studied real coffee shop environments and customer behaviors. Designed multiple character personalities to create a living, breathing scene.',
                         processImages: ['animation5-process-1.png', 'animation5-process-2.png'],
-                        timelapseVideo: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+                        timelapseVideo: 'https://www.youtube.com/embed/placeholder-timelapse'
                     },
                     tags: ['coffee-shop', 'characters', 'loop', 'cozy']
                 },
@@ -1288,7 +1288,7 @@ const SITE_CONFIG = {
                     title: 'Seasonal Transition Montage',
                     description: 'Beautiful transition animation showing the same magical forest scene changing through all four seasons with smooth morphing effects.',
                     duration: '01:30',
-                    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                    videoUrl: 'https://www.youtube.com/embed/placeholder-seasonal-transition',
                     videoType: 'youtube',
                     date: '2024-10-30',
                     projectType: 'personal',
@@ -1304,7 +1304,7 @@ const SITE_CONFIG = {
                         hasContent: true,
                         description: 'Extensive color palette development for each season. Created detailed transition maps to ensure smooth morphing between seasonal states.',
                         processImages: ['animation7-process-1.png', 'animation7-process-2.png', 'animation7-process-3.png'],
-                        timelapseVideo: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+                        timelapseVideo: 'https://www.youtube.com/embed/placeholder-timelapse'
                     },
                     tags: ['seasons', 'transition', 'environment', 'color']
                 },
