@@ -761,6 +761,660 @@ const PortfolioUtils = (function() {
     };
 
     // ============================================================================
+    // BUTTERFLY CURSOR MODULE
+    // ============================================================================
+
+    const ButterflyCursor = {
+        butterfly: null,
+        mousePos: { x: 0, y: 0 },
+        butterflyPos: { x: 0, y: 0 },
+        lastMousePos: { x: 0, y: 0 },
+        velocity: 0,
+        animationFrame: null,
+        config: {},
+
+        /**
+         * Initialize butterfly cursor
+         */
+        init(config) {
+            this.config = config.features?.butterflyCursor || {};
+
+            // Check if feature is enabled and supported
+            if (!this.config.enabled || !this.checkSupport()) {
+                return;
+            }
+
+            this.createButterfly();
+            this.attachEventListeners();
+            this.startAnimation();
+            this.hideCursor();
+        },
+
+        /**
+         * Check browser and device support
+         */
+        checkSupport() {
+            // Disable on touch devices and small screens
+            if ('ontouchstart' in window || window.innerWidth < 768) {
+                return false;
+            }
+
+            // Check for reduced motion preference
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return false;
+            }
+
+            return true;
+        },
+
+        /**
+         * Hide default cursor globally
+         */
+        hideCursor() {
+            const style = document.createElement('style');
+            style.id = 'butterfly-cursor-style';
+            style.textContent = `
+                *, *:hover, *:active {
+                    cursor: none !important;
+                }
+            `;
+            document.head.appendChild(style);
+        },
+
+        /**
+         * Create butterfly element
+         */
+        createButterfly() {
+            this.butterfly = document.createElement('div');
+            this.butterfly.id = 'butterfly-cursor';
+            this.butterfly.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: ${this.config.size || 40}px;
+                height: ${this.config.size || 40}px;
+                pointer-events: none;
+                z-index: 10000;
+                transform: translate(-50%, -50%);
+                transition: none;
+            `;
+
+            // Create butterfly SVG
+            this.butterfly.innerHTML = this.createButterflySVG();
+
+            // Initialize position to center
+            this.butterflyPos.x = window.innerWidth / 2;
+            this.butterflyPos.y = window.innerHeight / 2;
+            this.mousePos.x = this.butterflyPos.x;
+            this.mousePos.y = this.butterflyPos.y;
+
+            document.body.appendChild(this.butterfly);
+        },
+
+        /**
+         * Create butterfly SVG
+         */
+        createButterflySVG() {
+            return `
+                <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Butterfly body -->
+                    <ellipse cx="50" cy="50" rx="2" ry="18" fill="var(--navy-dark)" />
+
+                    <!-- Left wings -->
+                    <g class="left-wings" transform-origin="48 45">
+                        <!-- Upper left wing -->
+                        <path class="wing wing-upper-left"
+                            d="M 48,40 Q 25,15 15,30 Q 10,45 25,50 Q 40,48 48,40"
+                            fill="var(--sky-blue)"
+                            opacity="0.9"
+                            transform-origin="30 35"
+                        />
+                        <!-- Lower left wing -->
+                        <path class="wing wing-lower-left"
+                            d="M 48,55 Q 30,70 20,80 Q 15,85 25,85 Q 40,75 48,55"
+                            fill="var(--soft-pink)"
+                            opacity="0.8"
+                            transform-origin="30 70"
+                        />
+                    </g>
+
+                    <!-- Right wings -->
+                    <g class="right-wings" transform-origin="52 45">
+                        <!-- Upper right wing -->
+                        <path class="wing wing-upper-right"
+                            d="M 52,40 Q 75,15 85,30 Q 90,45 75,50 Q 60,48 52,40"
+                            fill="var(--sky-blue)"
+                            opacity="0.9"
+                            transform-origin="70 35"
+                        />
+                        <!-- Lower right wing -->
+                        <path class="wing wing-lower-right"
+                            d="M 52,55 Q 70,70 80,80 Q 85,85 75,85 Q 60,75 52,55"
+                            fill="var(--soft-pink)"
+                            opacity="0.8"
+                            transform-origin="70 70"
+                        />
+                    </g>
+
+                    <!-- Wing patterns -->
+                    <circle cx="30" cy="35" r="4" fill="var(--white)" opacity="0.6" />
+                    <circle cx="70" cy="35" r="4" fill="var(--white)" opacity="0.6" />
+                    <circle cx="25" cy="70" r="3" fill="var(--coral)" opacity="0.5" />
+                    <circle cx="75" cy="70" r="3" fill="var(--coral)" opacity="0.5" />
+
+                    <!-- Antennae -->
+                    <line x1="47" y1="35" x2="44" y2="28" stroke="var(--navy-dark)" stroke-width="1.5" stroke-linecap="round" />
+                    <line x1="53" y1="35" x2="56" y2="28" stroke="var(--navy-dark)" stroke-width="1.5" stroke-linecap="round" />
+                    <circle cx="44" cy="28" r="1.5" fill="var(--navy-dark)" />
+                    <circle cx="56" cy="28" r="1.5" fill="var(--navy-dark)" />
+                </svg>
+            `;
+        },
+
+        /**
+         * Attach event listeners
+         */
+        attachEventListeners() {
+            document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+            window.addEventListener('resize', () => this.handleResize());
+        },
+
+        /**
+         * Handle mouse movement
+         */
+        handleMouseMove(e) {
+            this.mousePos.x = e.clientX;
+            this.mousePos.y = e.clientY;
+
+            // Calculate velocity for wing animation
+            const dx = this.mousePos.x - this.lastMousePos.x;
+            const dy = this.mousePos.y - this.lastMousePos.y;
+            this.velocity = Math.sqrt(dx * dx + dy * dy);
+
+            this.lastMousePos.x = this.mousePos.x;
+            this.lastMousePos.y = this.mousePos.y;
+
+            // Update wing animation based on velocity
+            this.updateWingAnimation();
+        },
+
+        /**
+         * Handle window resize
+         */
+        handleResize() {
+            // Keep butterfly within bounds
+            this.mousePos.x = Math.min(this.mousePos.x, window.innerWidth);
+            this.mousePos.y = Math.min(this.mousePos.y, window.innerHeight);
+        },
+
+        /**
+         * Update wing animation based on velocity
+         */
+        updateWingAnimation() {
+            if (!this.butterfly) return;
+
+            const wings = this.butterfly.querySelectorAll('.wing');
+
+            // Determine animation speed based on velocity
+            let animationSpeed = '0.6s';
+            if (this.velocity > 10) {
+                animationSpeed = '0.3s'; // Fast flapping when moving quickly
+            } else if (this.velocity > 3) {
+                animationSpeed = '0.4s'; // Medium flapping when moving
+            } else {
+                animationSpeed = '1s';   // Slow idle flapping when stationary
+            }
+
+            // Apply animation to wings
+            wings.forEach(wing => {
+                wing.style.animation = `butterflyFlap ${animationSpeed} ease-in-out infinite`;
+            });
+        },
+
+        /**
+         * Start animation loop
+         */
+        startAnimation() {
+            const animate = () => {
+                if (!this.butterfly) return;
+
+                // Smooth following with lag
+                const followLag = this.config.followLag || 0.15;
+
+                this.butterflyPos.x += (this.mousePos.x - this.butterflyPos.x) * followLag;
+                this.butterflyPos.y += (this.mousePos.y - this.butterflyPos.y) * followLag;
+
+                // Update butterfly position
+                this.butterfly.style.left = this.butterflyPos.x + 'px';
+                this.butterfly.style.top = this.butterflyPos.y + 'px';
+
+                // Calculate rotation based on movement direction
+                const dx = this.mousePos.x - this.butterflyPos.x;
+                const dy = this.mousePos.y - this.butterflyPos.y;
+
+                if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+                    const rotation = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+                    this.butterfly.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+                }
+
+                this.animationFrame = requestAnimationFrame(animate);
+            };
+
+            animate();
+        },
+
+        /**
+         * Destroy butterfly cursor
+         */
+        destroy() {
+            if (this.animationFrame) {
+                cancelAnimationFrame(this.animationFrame);
+            }
+
+            if (this.butterfly) {
+                this.butterfly.remove();
+                this.butterfly = null;
+            }
+
+            // Restore default cursor
+            const style = document.getElementById('butterfly-cursor-style');
+            if (style) {
+                style.remove();
+            }
+        }
+    };
+
+    // ============================================================================
+    // PERSONA MODULE
+    // ============================================================================
+
+    const Persona = {
+        persona: null,
+        animationFrame: null,
+        idleTimer: null,
+        config: {},
+        currentPage: '',
+        states: {
+            idle: 'idle',
+            waving: 'waving',
+            pointing: 'pointing',
+            thinking: 'thinking',
+            holding: 'holding'
+        },
+        currentState: 'idle',
+
+        /**
+         * Initialize persona system
+         */
+        init(config) {
+            this.config = config.features?.persona || {};
+
+            // Check if feature is enabled
+            if (!this.config.enabled) {
+                return;
+            }
+
+            this.currentPage = this.getCurrentPage();
+            this.createPersona();
+            this.setupBehaviors();
+            this.startIdleAnimations();
+        },
+
+        /**
+         * Get current page identifier
+         */
+        getCurrentPage() {
+            const path = window.location.pathname.split('/').pop() || 'index.html';
+
+            if (path === 'index.html' || path === '') return 'home';
+            if (path.includes('illustration')) return 'gallery';
+            if (path.includes('storyboarding')) return 'gallery';
+            if (path.includes('concept')) return 'gallery';
+            if (path.includes('animation')) return 'gallery';
+            if (path.includes('photography')) return 'gallery';
+            if (path.includes('about')) return 'about';
+
+            return 'home';
+        },
+
+        /**
+         * Create persona element
+         */
+        createPersona() {
+            this.persona = document.createElement('div');
+            this.persona.id = 'waffle-persona';
+            this.persona.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 80px;
+                height: 80px;
+                z-index: 1000;
+                pointer-events: auto;
+                cursor: pointer;
+                transition: transform 0.3s ease;
+            `;
+
+            // Create waffle character SVG
+            this.persona.innerHTML = this.createWaffleSVG();
+
+            // Add click interaction
+            this.persona.addEventListener('click', () => this.handleClick());
+            this.persona.addEventListener('mouseenter', () => this.handleHover());
+
+            document.body.appendChild(this.persona);
+        },
+
+        /**
+         * Create waffle character SVG
+         */
+        createWaffleSVG() {
+            return `
+                <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Waffle body (main square) -->
+                    <rect x="25" y="35" width="50" height="40"
+                          fill="var(--soft-yellow)"
+                          stroke="var(--coral)"
+                          stroke-width="2"
+                          rx="8" />
+
+                    <!-- Waffle grid pattern -->
+                    <line x1="35" y1="35" x2="35" y2="75" stroke="var(--coral)" stroke-width="1" />
+                    <line x1="45" y1="35" x2="45" y2="75" stroke="var(--coral)" stroke-width="1" />
+                    <line x1="55" y1="35" x2="55" y2="75" stroke="var(--coral)" stroke-width="1" />
+                    <line x1="65" y1="35" x2="65" y2="75" stroke="var(--coral)" stroke-width="1" />
+
+                    <line x1="25" y1="45" x2="75" y2="45" stroke="var(--coral)" stroke-width="1" />
+                    <line x1="25" y1="55" x2="75" y2="55" stroke="var(--coral)" stroke-width="1" />
+                    <line x1="25" y1="65" x2="75" y2="65" stroke="var(--coral)" stroke-width="1" />
+
+                    <!-- Eyes -->
+                    <circle class="eye left-eye" cx="38" cy="48" r="3" fill="var(--navy-dark)" />
+                    <circle class="eye right-eye" cx="62" cy="48" r="3" fill="var(--navy-dark)" />
+
+                    <!-- Eye highlights -->
+                    <circle cx="39" cy="47" r="1" fill="var(--white)" />
+                    <circle cx="63" cy="47" r="1" fill="var(--white)" />
+
+                    <!-- Mouth -->
+                    <path class="mouth"
+                          d="M 42,58 Q 50,65 58,58"
+                          stroke="var(--navy-dark)"
+                          stroke-width="2"
+                          fill="none"
+                          stroke-linecap="round" />
+
+                    <!-- Arms (positioned for different animations) -->
+                    <g class="arms">
+                        <!-- Left arm -->
+                        <ellipse class="arm left-arm"
+                                cx="20" cy="50"
+                                rx="8" ry="4"
+                                fill="var(--soft-yellow)"
+                                transform-origin="25 50" />
+
+                        <!-- Right arm -->
+                        <ellipse class="arm right-arm"
+                                cx="80" cy="50"
+                                rx="8" ry="4"
+                                fill="var(--soft-yellow)"
+                                transform-origin="75 50" />
+                    </g>
+
+                    <!-- Speech bubble (hidden by default) -->
+                    <g class="speech-bubble" style="opacity: 0; transform: scale(0);">
+                        <ellipse cx="50" cy="15" rx="25" ry="12"
+                                fill="var(--white)"
+                                stroke="var(--navy-dark)"
+                                stroke-width="1" />
+                        <polygon points="45,27 50,35 55,27"
+                                fill="var(--white)"
+                                stroke="var(--navy-dark)"
+                                stroke-width="1" />
+                        <text class="speech-text"
+                              x="50" y="18"
+                              text-anchor="middle"
+                              font-family="var(--font-display)"
+                              font-size="8"
+                              fill="var(--navy-dark)">
+                            Hi there! 🧇
+                        </text>
+                    </g>
+
+                    <!-- Props for different states -->
+                    <g class="props" style="opacity: 0;">
+                        <!-- Envelope for contact page -->
+                        <rect class="envelope" x="70" y="40" width="15" height="10"
+                              fill="var(--white)"
+                              stroke="var(--navy-dark)"
+                              stroke-width="1" />
+                        <path d="M 70,40 L 77.5,47 L 85,40"
+                              stroke="var(--navy-dark)"
+                              stroke-width="1"
+                              fill="none" />
+                    </g>
+                </svg>
+            `;
+        },
+
+        /**
+         * Setup page-specific behaviors
+         */
+        setupBehaviors() {
+            const behaviors = this.config.behaviors || {};
+            const pageBehavior = behaviors[this.currentPage];
+
+            if (pageBehavior) {
+                // Set initial state based on page
+                this.setState(pageBehavior.initialState || 'idle');
+
+                // Schedule page-specific actions
+                if (pageBehavior.actions) {
+                    pageBehavior.actions.forEach(action => {
+                        setTimeout(() => {
+                            this.performAction(action);
+                        }, action.delay || 3000);
+                    });
+                }
+            }
+        },
+
+        /**
+         * Set persona state
+         */
+        setState(state) {
+            if (!this.persona || this.currentState === state) return;
+
+            this.currentState = state;
+            this.animateToState(state);
+        },
+
+        /**
+         * Animate to new state
+         */
+        animateToState(state) {
+            const arms = this.persona.querySelectorAll('.arm');
+            const speechBubble = this.persona.querySelector('.speech-bubble');
+            const props = this.persona.querySelector('.props');
+
+            // Reset animations
+            arms.forEach(arm => arm.style.animation = '');
+            speechBubble.style.opacity = '0';
+            speechBubble.style.transform = 'scale(0)';
+            props.style.opacity = '0';
+
+            switch (state) {
+                case 'waving':
+                    this.animateWaving();
+                    this.showSpeechBubble('Hello! 👋');
+                    break;
+                case 'pointing':
+                    this.animatePointing();
+                    this.showSpeechBubble('Check this out!');
+                    break;
+                case 'thinking':
+                    this.animateThinking();
+                    this.showSpeechBubble('Hmm... 🤔');
+                    break;
+                case 'holding':
+                    this.animateHolding();
+                    this.showProps();
+                    break;
+                default:
+                    this.animateIdle();
+            }
+        },
+
+        /**
+         * Animation states
+         */
+        animateIdle() {
+            const persona = this.persona.querySelector('svg');
+            persona.style.animation = 'personaBreathe 3s ease-in-out infinite';
+        },
+
+        animateWaving() {
+            const rightArm = this.persona.querySelector('.right-arm');
+            rightArm.style.animation = 'personaWave 0.8s ease-in-out 3';
+        },
+
+        animatePointing() {
+            const rightArm = this.persona.querySelector('.right-arm');
+            rightArm.style.transformOrigin = '75 50';
+            rightArm.style.animation = 'personaPoint 0.5s ease-out forwards';
+        },
+
+        animateThinking() {
+            const leftArm = this.persona.querySelector('.left-arm');
+            leftArm.style.transformOrigin = '25 50';
+            leftArm.style.animation = 'personaThink 0.5s ease-out forwards';
+        },
+
+        animateHolding() {
+            const rightArm = this.persona.querySelector('.right-arm');
+            rightArm.style.transformOrigin = '75 50';
+            rightArm.style.animation = 'personaHold 0.5s ease-out forwards';
+        },
+
+        /**
+         * Show speech bubble with text
+         */
+        showSpeechBubble(text) {
+            const speechBubble = this.persona.querySelector('.speech-bubble');
+            const speechText = this.persona.querySelector('.speech-text');
+
+            speechText.textContent = text;
+            speechBubble.style.opacity = '1';
+            speechBubble.style.transform = 'scale(1)';
+            speechBubble.style.transition = 'all 0.3s ease';
+
+            // Hide after 3 seconds
+            setTimeout(() => {
+                speechBubble.style.opacity = '0';
+                speechBubble.style.transform = 'scale(0)';
+            }, 3000);
+        },
+
+        /**
+         * Show props for specific actions
+         */
+        showProps() {
+            const props = this.persona.querySelector('.props');
+            props.style.opacity = '1';
+            props.style.transition = 'opacity 0.3s ease';
+        },
+
+        /**
+         * Perform specific action
+         */
+        performAction(action) {
+            switch (action.type) {
+                case 'wave':
+                    this.setState('waving');
+                    break;
+                case 'point':
+                    this.setState('pointing');
+                    break;
+                case 'think':
+                    this.setState('thinking');
+                    break;
+                case 'hold':
+                    this.setState('holding');
+                    break;
+            }
+
+            // Return to idle after action
+            setTimeout(() => {
+                this.setState('idle');
+            }, action.duration || 4000);
+        },
+
+        /**
+         * Start idle animations and random behaviors
+         */
+        startIdleAnimations() {
+            // Random idle behaviors
+            this.idleTimer = setInterval(() => {
+                if (this.currentState === 'idle') {
+                    const randomActions = ['waving', 'thinking'];
+                    const randomAction = randomActions[Math.floor(Math.random() * randomActions.length)];
+
+                    this.setState(randomAction);
+
+                    setTimeout(() => {
+                        this.setState('idle');
+                    }, 3000);
+                }
+            }, 15000 + Math.random() * 10000); // Random interval between 15-25 seconds
+        },
+
+        /**
+         * Handle click interaction
+         */
+        handleClick() {
+            const clickActions = ['waving', 'thinking'];
+            const randomAction = clickActions[Math.floor(Math.random() * clickActions.length)];
+
+            this.setState(randomAction);
+
+            setTimeout(() => {
+                this.setState('idle');
+            }, 3000);
+        },
+
+        /**
+         * Handle hover interaction
+         */
+        handleHover() {
+            if (this.currentState === 'idle') {
+                this.persona.style.transform = 'scale(1.1)';
+
+                setTimeout(() => {
+                    this.persona.style.transform = 'scale(1)';
+                }, 200);
+            }
+        },
+
+        /**
+         * Destroy persona
+         */
+        destroy() {
+            if (this.idleTimer) {
+                clearInterval(this.idleTimer);
+            }
+
+            if (this.animationFrame) {
+                cancelAnimationFrame(this.animationFrame);
+            }
+
+            if (this.persona) {
+                this.persona.remove();
+                this.persona = null;
+            }
+        }
+    };
+
+    // ============================================================================
     // HERO MODULE
     // ============================================================================
     
@@ -1147,6 +1801,8 @@ const PortfolioUtils = (function() {
         Navigation,
         Gallery,
         Animations,
+        ButterflyCursor,
+        Persona,
         Hero,
         Utils,
         Lightbox,
@@ -1168,6 +1824,14 @@ const PortfolioUtils = (function() {
                 // Optional features based on config
                 if (config.features && config.features.animations) {
                     Animations.init();
+                }
+
+                if (config.features && config.features.butterflyCursor) {
+                    ButterflyCursor.init(config);
+                }
+
+                if (config.features && config.features.persona) {
+                    Persona.init(config);
                 }
 
                 // Page-specific initialization

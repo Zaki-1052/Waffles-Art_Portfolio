@@ -63,7 +63,41 @@ const baseConfig = {
         clouds: true,
         darkMode: false,
         search: false,
-        newsletter: false
+        newsletter: false,
+        butterflyCursor: {
+            enabled: true,
+            size: 40,
+            followLag: 0.15,
+            flapSpeed: 'auto'
+        },
+        persona: {
+            enabled: true,
+            character: 'waffle',
+            position: 'bottom-right',
+            behaviors: {
+                home: {
+                    initialState: 'waving',
+                    actions: [
+                        { type: 'wave', delay: 5000, duration: 3000 },
+                        { type: 'think', delay: 15000, duration: 3000 }
+                    ]
+                },
+                gallery: {
+                    initialState: 'pointing',
+                    actions: [
+                        { type: 'point', delay: 8000, duration: 4000 },
+                        { type: 'wave', delay: 20000, duration: 3000 }
+                    ]
+                },
+                about: {
+                    initialState: 'waving',
+                    actions: [
+                        { type: 'wave', delay: 3000, duration: 3000 },
+                        { type: 'think', delay: 12000, duration: 4000 }
+                    ]
+                }
+            }
+        }
     },
 
     performance: {

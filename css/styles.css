@@ -666,6 +666,63 @@ p {
     100% { background-position: -200% 0; }
 }
 
+@keyframes butterflyFlap {
+    0%, 100% {
+        transform: scaleY(1) rotateX(0deg);
+    }
+    50% {
+        transform: scaleY(0.3) rotateX(45deg);
+    }
+}
+
+@keyframes personaBreathe {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+@keyframes personaWave {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-30deg);
+    }
+    75% {
+        transform: rotate(30deg);
+    }
+}
+
+@keyframes personaPoint {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(-45deg) scale(1.1);
+    }
+}
+
+@keyframes personaThink {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(45deg) translateY(-10px);
+    }
+}
+
+@keyframes personaHold {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(-20deg) translateY(-5px);
+    }
+}
+
 /* ============================================================================
    UTILITIES
    ============================================================================ */
