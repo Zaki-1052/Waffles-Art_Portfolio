@@ -78,7 +78,7 @@ const baseConfig = {
                 lifespan: 2000,
                 waveAmplitude: 15,
                 sparkle: true,
-                trail: false
+                trail: true
             }
         },
         persona: {
